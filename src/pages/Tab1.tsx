@@ -1,15 +1,32 @@
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/react';
+import React from 'react';
+import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar,
+    IonButtons, IonMenu, IonMenuButton } from '@ionic/react';
 import ExploreContainer from '../components/ExploreContainer';
 import './Tab1.css';
 
 const Tab1: React.FC = () => {
   return (
-    <IonPage>
+    <>
+
+    <IonMenu contentId="main-content">
+        <IonHeader>
+          <IonToolbar>
+            <IonTitle>Menu Content</IonTitle>
+          </IonToolbar>
+        </IonHeader>
+        <IonContent className="ion-padding">This is the menu content.</IonContent>
+      </IonMenu>
+
+    <IonPage id="main-content">
       <IonHeader>
         <IonToolbar>
-          <IonTitle>Tab 1</IonTitle>
+            <IonButtons slot="start">
+                <IonMenuButton></IonMenuButton>
+            </IonButtons>
+            <IonTitle>Form Manager</IonTitle>
         </IonToolbar>
       </IonHeader>
+
       <IonContent fullscreen>
         <IonHeader collapse="condense">
           <IonToolbar>
@@ -19,6 +36,7 @@ const Tab1: React.FC = () => {
         <ExploreContainer name="Tab 1 page" />
       </IonContent>
     </IonPage>
+    </>
   );
 };
 

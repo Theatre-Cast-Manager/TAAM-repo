@@ -2,8 +2,8 @@ import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonImg, IonButton
 import './Tab2.css';
 
 const Tab2: React.FC = () => {
-  const [userData, setUserData] = React.useState(null);
 
+  const [userData, setUserData] = React.useState(null);
   React.useEffect(() => {
     getUserData().then(data => setUserData(data));
   }, []);
