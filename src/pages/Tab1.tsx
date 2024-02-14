@@ -11,10 +11,17 @@ const Tab1: React.FC = () => {
     <IonMenu contentId="main-content">
         <IonHeader>
           <IonToolbar>
-            <IonTitle>Menu Content</IonTitle>
+            <IonTitle>Account Manager</IonTitle>
           </IonToolbar>
         </IonHeader>
-        <IonContent className="ion-padding">This is the menu content.</IonContent>
+        <IonContent className="ion-padding">
+          {/* The user's Google PFP needs to be used as the source here */}
+          <div className='profile'>
+            <img src="../../public/test_logo.jpg" alt="placeholder PFP" />
+            <h1>ABC Community Theatre</h1>
+            <ion-button>Logout</ion-button>
+          </div>
+        </IonContent>
       </IonMenu>
 
     <IonPage id="main-content">
