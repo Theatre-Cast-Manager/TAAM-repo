@@ -12,9 +12,9 @@ import {
 } from "@ionic/react";
 import ExploreContainer from "../components/ExploreContainer";
 import { handleLogout } from "../authService";
-import "./Tab1.css";
+import "./dashboard.css";
 
-const Tab1: React.FC = () => {
+const DashboardPage: React.FC = () => {
   return (
     <>
       <IonMenu contentId="main-content">
@@ -56,4 +56,4 @@ const Tab1: React.FC = () => {
   );
 };
 
-export default Tab1;
+export default DashboardPage;
