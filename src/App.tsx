@@ -1,3 +1,6 @@
+/*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                      Import Statements                                       %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 import React, { useEffect } from "react";
 import { Redirect, Route } from "react-router-dom";
 import {
@@ -36,7 +39,9 @@ import "@ionic/react/css/display.css";
 /* Theme variables */
 import "./theme/variables.css";
 
-// Setup Ionic React
+/*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                     Ionic React Stup                                         %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 setupIonicReact();
 
 const App: React.FC = () => {
@@ -44,11 +49,15 @@ const App: React.FC = () => {
     SplashScreen.hide(); // Hide the splash screen once the app is ready
   }, []);
 
+
+/*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                            Component Structure and Routing                                   %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
   return (
     <IonApp>
       <IonReactRouter>
         <IonRouterOutlet>
-          {/* Routs */}
+          {/* Routs: define different pages of application and their corresponding URL paths. */} 
           <Route path="/dashboard" component={DashboardPage} />
           <Route path="/login" component={Login} />
           {/* Redirects */}
