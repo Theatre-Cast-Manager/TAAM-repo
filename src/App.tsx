@@ -1,20 +1,13 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Redirect, Route } from "react-router-dom";
 import {
   IonApp,
-  IonIcon,
-  IonLabel,
   IonRouterOutlet,
-  IonTabBar,
-  IonTabButton,
-  IonTabs,
   setupIonicReact,
 } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
-import { SplashScreen } from "@capacitor/splash-screen"; // Import SplashScreen
-import { ellipse, square, triangle, folder, images } from "ionicons/icons";
+import SplashScreen from './pages/splashscreen';
 import DashboardPage from "./pages/dashboard";
-// import Tab2 from "./pages/Tab2";
 import Login from "./pages/Login";
 
 /* Core CSS required for Ionic components to work properly */
@@ -40,21 +33,29 @@ import "./theme/variables.css";
 setupIonicReact();
 
 const App: React.FC = () => {
+  const [showSplash, setShowSplash] = useState(true);
+
   useEffect(() => {
-    SplashScreen.hide(); // Hide the splash screen once the app is ready
+    setTimeout(() => {
+      setShowSplash(false);
+    }, 2000); // Hide the splash screen after 2 seconds
   }, []);
 
   return (
     <IonApp>
-      <IonReactRouter>
-        <IonRouterOutlet>
-          {/* Routs */}
-          <Route path="/dashboard" component={DashboardPage} />
-          <Route path="/login" component={Login} />
-          {/* Redirects */}
-          <Redirect exact from="/" to="/login" />
-        </IonRouterOutlet>
-      </IonReactRouter>
+      {showSplash ? (
+        <SplashScreen />
+      ) : (
+        <IonReactRouter>
+          <IonRouterOutlet>
+            {/* Routes */}
+            <Route path="/dashboard" component={DashboardPage} />
+            <Route path="/login" component={Login} />
+            {/* Redirects */}
+            <Redirect exact from="/" to="/login" />
+          </IonRouterOutlet>
+        </IonReactRouter>
+      )}
     </IonApp>
   );
 };
