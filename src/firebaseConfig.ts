@@ -2,7 +2,7 @@ import { initializeApp } from "firebase/app"; // imports the initializeApp funct
 import { getAnalytics } from "firebase/analytics";  //import the Firebase Analytics service into Taam
 // see authService.ts for Firebase Auth import and setup
 
-/*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+/*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                    Firebase Config object                                   %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 const firebaseConfig = {  // this firebaseConfig object includes various key-value pairs that uniquely identify your Fb project and grant your app access to Fb services

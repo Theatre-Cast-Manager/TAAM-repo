@@ -68,11 +68,11 @@ const Login: React.FC = () => {
       <IonPage>
         <IonHeader>
           <IonToolbar>
-            <IonTitle>Welcome to TAAM</IonTitle>
+            <IonTitle>TAAM logo here</IonTitle>
           </IonToolbar>
         </IonHeader>
         <IonContent fullscreen>
-          <h1>Sign in to Taam with Google</h1>
+          <h1>Sign in with your Google Account</h1>
           {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
           <div>
             {!userPhotoUrl && ( <IonButton onClick={login}>Sign in</IonButton>)} { /* use the login function */ }
