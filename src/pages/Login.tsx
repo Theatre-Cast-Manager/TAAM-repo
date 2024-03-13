@@ -2,6 +2,7 @@
 %%                                        Login imports                                         %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 import React, { useState, useEffect } from 'react';
+import { useHistory } from 'react-router-dom'; // Import useHistory for navigation
 import {  //UI components from the @ionic/react package
   IonContent,
   IonHeader,
@@ -12,7 +13,7 @@ import {  //UI components from the @ionic/react package
   IonImg,
 } from "@ionic/react";
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import { handleLogin, handleLogout } from "../authService"; //functions are imported from ../authService.ts
+import { handleLogin } from "../authService"; //functions are imported from ../authService.ts
 import "./Login.css"; //styling
 
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -21,26 +22,26 @@ import "./Login.css"; //styling
 const Login: React.FC = () => {
   const [userPhotoUrl, setUserPhotoUrl] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string>('');
+  const history = useHistory(); // Hook for programmatically navigating
 
   useEffect(() => {
     const auth = getAuth();
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
-        // User is signed in, set the user's profile picture URL
-        setUserPhotoUrl(user.photoURL);
+        setUserPhotoUrl(user.photoURL); // User is signed in, set the user's profile picture URL
         console.log("I made it!");
         console.log(user);
+        history.push('/home'); // Redirect to Home Screen upon successful login
       } else {
-        // User is signed out, reset the profile picture URL
-        setUserPhotoUrl(null);
+        setUserPhotoUrl(null);  // User is signed out, reset the profile picture URL
         console.log("I made it to the else!!!");
       }
     });
     // Cleanup subscription on unmount
     return () => unsubscribe();
-  }, []);
+  }, [history]);  //add history to the dependency array
 
-  //Login function
+  //Login function with error checking
    const login = () => {
     handleLogin()
       .then((result) => {
@@ -53,7 +54,8 @@ const Login: React.FC = () => {
       });
   };
 
-  //Logout function
+  /*
+  //Logout function with error checking
   const logout = () => {
     handleLogout()
       .catch((error) => {
@@ -62,6 +64,7 @@ const Login: React.FC = () => {
         setErrorMessage("Failed to log out. Please try again.");
       });
   };
+  */
 
   return (
     <>
@@ -73,15 +76,10 @@ const Login: React.FC = () => {
         </IonHeader>
         <IonContent fullscreen>
           <h1>Sign in with your Google Account</h1>
-          {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
           <div>
-            {!userPhotoUrl && ( <IonButton onClick={login}>Sign in</IonButton>)} { /* use the login function */ }
-            {userPhotoUrl && ( <>
-                <IonButton onClick={logout}>Sign out</IonButton>  {/* use the logout function */}
-                <IonButton routerLink="/dashboard">Go to Dashboard</IonButton>
-              </>)}
+            {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+            {!userPhotoUrl && <IonButton onClick={login}>Sign in</IonButton>}
           </div>
-          {userPhotoUrl && ( <IonImg src={userPhotoUrl} alt="User Profile" /> )}
         </IonContent>
       </IonPage>
     </>

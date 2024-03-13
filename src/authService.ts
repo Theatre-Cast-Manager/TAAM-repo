@@ -1,5 +1,5 @@
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%                            Firebase Auth Import Statements                                   %%
+%%                            Firebase Auth (FbA) Import Statements                             %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 import {    //these import statements bring in the necessary FbA functionalities from the Fb SDK.
   getAuth,   //FbA method, initializes the authentication service
