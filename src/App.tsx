@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Redirect, Route } from "react-router-dom";
 import {
   IonApp,
@@ -7,7 +7,7 @@ import {
 } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
 import SplashScreen from './pages/splashscreen';
-import DashboardPage from "./pages/dashboard";
+//import DashboardPage from "./pages/dashboard";
 import Login from "./pages/Login";
 
 /* Core CSS required for Ionic components to work properly */
@@ -43,7 +43,6 @@ const App: React.FC = () => {
     }, 2000); // Hide the splash screen after 2 seconds
   }, []);
 
-
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                            Component Structure and Routing                                   %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
@@ -52,7 +51,7 @@ const App: React.FC = () => {
       <IonReactRouter>
         <IonRouterOutlet>
           {/* Routs */}
-          <Route path="/dashboard" component={DashboardPage} />
+          {/*<Route path="/dashboard" component={DashboardPage} />*/}
           <Route path="/login" component={Login} />
           {/* Redirects */}
           <Redirect exact from="/" to="/login" />
