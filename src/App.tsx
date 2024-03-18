@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { Redirect, Route } from "react-router-dom";
 import {
   IonApp,
@@ -29,7 +29,9 @@ import "@ionic/react/css/display.css";
 /* Theme variables */
 import "./theme/variables.css";
 
-// Setup Ionic React
+/*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                     Ionic React Stup                                         %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 setupIonicReact();
 
 const App: React.FC = () => {
@@ -41,21 +43,21 @@ const App: React.FC = () => {
     }, 2000); // Hide the splash screen after 2 seconds
   }, []);
 
+
+/*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                            Component Structure and Routing                                   %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
   return (
     <IonApp>
-      {showSplash ? (
-        <SplashScreen />
-      ) : (
-        <IonReactRouter>
-          <IonRouterOutlet>
-            {/* Routes */}
-            <Route path="/dashboard" component={DashboardPage} />
-            <Route path="/login" component={Login} />
-            {/* Redirects */}
-            <Redirect exact from="/" to="/login" />
-          </IonRouterOutlet>
-        </IonReactRouter>
-      )}
+      <IonReactRouter>
+        <IonRouterOutlet>
+          {/* Routs */}
+          <Route path="/dashboard" component={DashboardPage} />
+          <Route path="/login" component={Login} />
+          {/* Redirects */}
+          <Redirect exact from="/" to="/login" />
+        </IonRouterOutlet>
+      </IonReactRouter>
     </IonApp>
   );
 };
