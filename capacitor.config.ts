@@ -11,11 +11,20 @@ const config: CapacitorConfig = {
     SplashScreen: {
       launchShowDuration: 2000,
       launchAutoHide: false,
-      backgroundColor: "#ffffff",
+      backgroundColor: "#8B0000",
       splashFullScreen: true,
       splashImmersive: false,
-      androidSplashResourceName: "splash",
-      androidScaleType: "CENTER_CROP"
+      androidSplashResourceName: "test_logo",
+      androidScaleType: "CENTER_CROP",
+      iosSplash: {
+        backgroundColor: "#8B0000",
+        imageName: "test_logo",
+        resizeMode: "cover",
+        showSpinner: false,
+        spinnerStyle: "small",
+        spinnerColor: "dark",
+        splashFullScreen: true
+      }
     }
   }
 };

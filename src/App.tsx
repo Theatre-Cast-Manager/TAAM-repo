@@ -40,7 +40,7 @@ import "@ionic/react/css/display.css";
 import "./theme/variables.css";
 
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%                                     Ionic React Stup                                         %%
+%%                                    Ionic React Setup                                         %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 setupIonicReact();
 
@@ -49,14 +49,14 @@ const App: React.FC = () => {
     SplashScreen.hide(); // Hide the splash screen once the app is ready
   }, []);
 
-/*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                            Component Structure and Routing                                   %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
   return (
     <IonApp>
       <IonReactRouter>
         <IonRouterOutlet>
-          {/* Routes: define different pages of application and their corresponding URL paths. */} 
+          {/* Routes: define different pages of application and their corresponding URL paths. */}
           <Route path="/home" component={HomePage} />
           <Route path="/login" component={LoginPage} />
           <Route path="/tab2" component={Tab2} />
