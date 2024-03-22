@@ -103,7 +103,36 @@ const HomePage: React.FC = () => {
   const [data, setData] = useState<any>(null);
   const [formFields, setFormFields] = useState([]);
 
-  //Paste in fetch data code here
+  useEffect( () => {
+    const fetchData = async () => {
+      if(sheetID){
+        //url for fetching data = urlStart + sheetId + urlEnd = https://sheets.googleapis.com/v4/spreadsheets/[GIVENID]/values/Form Responses 1!A1:L27?key=API_KEY
+        const urlStart = "https://sheets.googleapis.com/v4/spreadsheets/";
+        const urlEnd = "/values/Form Responses 1!A1:AA100?key="; //insert API key as variable
+        const urlComplete = urlStart + sheetID + urlEnd;
+  
+        try {
+          const response = await fetch(urlComplete);
+          if( !response.ok) {
+            throw new Error ("Failed to fetch data");
+          }
+          const jsonData = await response.json();
+          setData( jsonData.values );
+          setFormFields(jsonData.values[0]);
+
+            //Commented out until we have an element by this ID (likely a div that will hold our displayed data)
+          // const bundleViewer = document.getElementById("form_data");
+          // if(bundleViewer){
+          //   console.log("display");
+          //   bundleViewer.style.display = "block";
+          // } else{
+          //   console.log("hide");
+          // }
+        } catch (err) {
+          console.error("Error fetching data: ", err);
+        }
+      }
+    };
 
   /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   %%                                           Parse Data                                         %%
