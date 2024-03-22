@@ -24,7 +24,7 @@ import "./home.css";
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 const HomePage: React.FC = () => {
   /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  %%                                        Login functionality                                   %%
+  %%                                        Side Menu                                             %%
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
   const [userName, setUserName] = useState<string | null>(null); // To store user's name
   const [userPhotoUrl, setUserPhotoUrl] = useState<string | null>(null);
@@ -60,13 +60,13 @@ const HomePage: React.FC = () => {
   };
 
   /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  %%                                  Data Gathering Functionality                                %%
-  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
-  //A reminder of what our input element looks like:
-  // <IonInput label='sheet_url' value={givenUrl} ref={ionInputEl} onIonInput={handleInput}></IonInput>
-  // the value attribute controls what is displayed in the input field - we will clear this after the submit URL button has been clicked to clear the field
-  // the ref attribute allows us to connect our element to a reference we can use to manipulate the field and gather information from it
-  
+  %%                                     Get Data from URL                                        %%
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+   A reminder of what our input element looks like:
+   <IonInput label='sheet_url' value={givenUrl} ref={ionInputEl} onIonInput={handleInput}></IonInput>
+   the value attribute controls what is displayed in the input field - we will clear this after the submit URL button has been clicked to clear the field
+   the ref attribute allows us to connect our element to a reference we can use to manipulate the field and gather information from it
+  */
   //Controls our input element (this is what we assign 'ref' in the input element)
   const ionInputEl = useRef<HTMLIonInputElement>(null);
 
@@ -103,26 +103,10 @@ const HomePage: React.FC = () => {
   const [data, setData] = useState<any>(null);
   const [formFields, setFormFields] = useState([]);
 
-
-  //TODO - API call to fetch data
-  //Something like...
-  // useEffect( () => {
-  //   const fetchData = async () => {
-  //   if(sheetID){
-  //     try{
-  //       //Here is where the API call would go
-  //       //If our call is successful we would set our 'data' variable and our 'formFields' value to be the first row from the 'data' array
-  //     }
-  //     catch(err){
-  //       console.error("Error in fetching data: ", err);
-  //     }
-  //   }
-  //  };
-  //  fetchData();
-  // }, [sheetID]) //sheetID is only updated after the submit button is clicked, so we can add it as a dependency.
+  //Paste in fetch data code here
 
   /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  %%                                  Data Parsing Functionality                                  %%
+  %%                                           Parse Data                                         %%
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
   //Holds information about our data that we need to properly display it
@@ -160,7 +144,7 @@ const HomePage: React.FC = () => {
   })
 
   /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  %%                                  Image Display Functionality                                 %%
+  %%                                          Display Data                                        %%
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
   //TODO: update alt tag with actor's name
   //Example call: <img src={generateThumbnailUrl(extractIdFromUrl(columnData))} alt="Thumbnail" />
@@ -181,7 +165,7 @@ const HomePage: React.FC = () => {
   };
 
   /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  %%                                 Developer/User Functionality                                 %%
+  %%                                    Expand/Collapse Elements                                  %%
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
   //These can be attatched to buttons to quickly expand or collapse all summary elements that hold form data
   const expandAll = () => {
