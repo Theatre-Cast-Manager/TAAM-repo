@@ -71,7 +71,7 @@ const Login: React.FC = () => {
       <IonPage>
         <IonHeader>
           <IonToolbar>
-            <IonTitle>TAAM logo here</IonTitle>
+          <IonImg src="TAAM.png" style={{ width: '200px', height: '200px', margin: 'auto'}} />
           </IonToolbar>
         </IonHeader>
         <IonContent fullscreen>
