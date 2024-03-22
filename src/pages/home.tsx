@@ -18,6 +18,7 @@ import {
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { handleLogout } from "../authService";
 import "./home.css";
+const googleSheetsApiKey = import.meta.env.VITE_GOOGLE_SHEETS_API_KEY;
 
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                        'Home' page                                           %%
@@ -108,7 +109,7 @@ const HomePage: React.FC = () => {
       if(sheetID){
         //url for fetching data = urlStart + sheetId + urlEnd = https://sheets.googleapis.com/v4/spreadsheets/[GIVENID]/values/Form Responses 1!A1:L27?key=API_KEY
         const urlStart = "https://sheets.googleapis.com/v4/spreadsheets/";
-        const urlEnd = "/values/Form Responses 1!A1:AA100?key="; //insert API key as variable
+        const urlEnd = `/values/Form Responses 1!A1:AA100?key=${googleSheetsApiKey}`; //insert API key here
         const urlComplete = urlStart + sheetID + urlEnd;
   
         try {
@@ -120,20 +121,31 @@ const HomePage: React.FC = () => {
           setData( jsonData.values );
           setFormFields(jsonData.values[0]);
 
-            //Commented out until we have an element by this ID (likely a div that will hold our displayed data)
-          // const bundleViewer = document.getElementById("form_data");
-          // if(bundleViewer){
-          //   console.log("display");
-          //   bundleViewer.style.display = "block";
-          // } else{
-          //   console.log("hide");
-          // }
+          const bundleViewer = document.getElementById("form_data");
+          if(bundleViewer){
+            console.log("display");
+            bundleViewer.style.display = "block";
+          } else{
+            console.log("hide");
+          }
         } catch (err) {
           console.error("Error fetching data: ", err);
         }
       }
     };
 
+    const testDisplay = document.getElementById("test_display");
+    const testDisplay2 = document.getElementById("test_display2");
+    if (testDisplay) {
+      testDisplay.style.display = "none";
+    }
+    if (testDisplay2) {
+      testDisplay2.style.display = "none";
+    }
+
+    fetchData();
+  }, [sheetID]);
+    
   /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   %%                                           Parse Data                                         %%
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
@@ -251,6 +263,44 @@ const HomePage: React.FC = () => {
             <IonInput label='sheet_url' value={givenUrl} ref={ionInputEl} onIonInput={handleInput}></IonInput>
             <IonButton onClick={handleClick}>Submit URL</IonButton>
           </div>
+          
+          <div id='form_data_summary'>
+          <h2>Form Data:</h2>
+          <IonButton onClick={expandAll}>Expand</IonButton>
+          <IonButton onClick={collapseAll}>Collapse</IonButton>
+          {data && (
+            <ul>
+              {data.map((row: any, rowIndex: number) => (
+                rowIndex > 0 && (
+                  // Summary for each form
+                  <li key={rowIndex}>
+                    <details>
+                        <summary>
+                          {data[rowIndex][nameCol]}
+                        </summary>
+                      <ul>
+                        {Object.entries(row).map(([columnName, columnData], cellIndex: number) => (
+                          // Summary for each field in the form IF it's not null (MISSING)
+                          !nullCols.includes(parseInt(columnName)) && (
+                            <li key={columnName}>
+                              {parseInt(columnName) === urlColumn ? (
+                                <img src={generateThumbnailUrl(extractIdFromUrl(columnData))} alt="Thumbnail" />
+                              ) : (
+                                <>
+                                  <strong>{formFields[parseInt(columnName)]}: <br /> </strong>{columnData}
+                                </>
+                              )}
+                            </li>
+                          )                         
+                        ))}
+                      </ul>
+                    </details>
+                  </li>
+                )
+              ))}
+            </ul>
+          )}
+        </div>
         </IonContent>
       </IonPage>
     </>
