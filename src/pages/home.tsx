@@ -19,6 +19,7 @@ import {
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { handleLogout } from "../authService";
 import "./home.css";
+import { PDFDownloadLink, Page, Text, View, Document, StyleSheet } from '@react-pdf/renderer';
 const googleSheetsApiKey = import.meta.env.VITE_GOOGLE_SHEETS_API_KEY;
 
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -223,101 +224,171 @@ const HomePage: React.FC = () => {
     });
   };
 
+
+/*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                        PDF stuff                                             %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
+
+const styles = StyleSheet.create({
+  page: { flexDirection: 'column', padding: 10 },
+  section: { margin: 5, padding: 5 },
+  text: { margin: 12, fontSize: 14 },
+});
+
+const SingleAuditionPDF = ({ row }) => {
+  return (
+    <Document>
+      <Page style={styles.page}>
+        {row.map((dataPoint, index) => (
+          <View key={index} style={styles.section}>
+            <Text style={styles.text}>{dataPoint}</Text>
+          </View>
+        ))}
+      </Page>
+    </Document>
+  );
+};
+  
+  {data.slice(1).map((row, rowIndex) => (
+    <details key={rowIndex}>
+      <summary>{row[0]}</summary> {/* Assuming the first column is the name */}
+      <PDFDownloadLink
+        document={<SingleAuditionPDF row={row} />}
+        fileName={`${row[0]}-audition.pdf`}
+      >
+        {({ loading }) => (loading ? 'Loading document...' : 'Export This Audition')}
+      </PDFDownloadLink>
+    </details>
+  ))}
+
+
+  const AllAuditionsPDF = ({ data }) => (
+    <Document>
+      {data.map((row, rowIndex) => (
+        <Page key={rowIndex} style={styles.page}>
+          {row.map((value, index) => (
+            <View key={index} style={styles.section}>
+              <Text style={styles.text}>{value}</Text>
+            </View>
+          ))}
+        </Page>
+      ))}
+    </Document>
+  );
+  
+    return (
+      <Document>
+        {data.slice(1).map((row, rowIndex) => (
+          <Page key={rowIndex} style={styles.page}>
+            {row.map((value, index) => (
+              <View key={index} style={styles.section}>
+                <Text>{`${data[0][index]}: ${value}`}</Text>
+              </View>
+            ))}
+          </Page>
+        ))}
+      </Document>
+    );
+  };
+
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                        'home' page HTML                                      %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
-  return (
-    <>
-      <IonMenu contentId="main-content" ref={menuRef}> {/* Attach the ref to IonMenu */}
-        <IonHeader>
+return (
+  <>
+    <IonMenu contentId="main-content" ref={menuRef}>
+      <IonHeader>
+        <IonToolbar>
+          <IonTitle>Your Account</IonTitle>
+        </IonToolbar>
+      </IonHeader>
+      <IonContent className="ion-padding">
+        <div className="profile">
+          <img src={userPhotoUrl || '../../public/test_logo.jpg'} alt="User Profile" />
+          <h1>{userName}</h1>
+          <IonButton onClick={logout}>Logout</IonButton>
+        </div>
+      </IonContent>
+    </IonMenu>
+
+    <IonPage id="main-content">
+      <IonButtons slot="start">
+        <IonMenuButton></IonMenuButton>
+      </IonButtons>
+
+      <IonContent fullscreen>
+        <IonHeader collapse="condense">
           <IonToolbar>
-            <IonTitle>Your Account</IonTitle>
+            <IonTitle size="large">Holla</IonTitle>
           </IonToolbar>
         </IonHeader>
-        <IonContent className="ion-padding">
-          <div className="profile">
-            <img src={userPhotoUrl || '../../public/test_logo.jpg'} alt="User Profile" />
-            <h1>{userName}</h1> {/* Display the user's name */}
-            <IonButton onClick={logout}>Logout</IonButton>
-          </div>
-        </IonContent>
-      </IonMenu>
-
-      <IonPage id="main-content">
-        <IonButtons slot="start">
-          <IonMenuButton></IonMenuButton>
-        </IonButtons>
-
-        <IonContent fullscreen>
-          <IonHeader collapse="condense">
-            <IonToolbar>
-              <IonTitle size="large">Holla</IonTitle>
-            </IonToolbar>
-          </IonHeader>
-          <div id='instructions'>
-            <p>
-              To load audition data, paste the URL of the Sheet associated with your audition Form, and click 'View Auditions'
-            </p>
-          </div>
-          <div id='url_submission'>
-            <IonInput label='URL:' value={givenUrl} ref={ionInputEl} onIonInput={handleInput}></IonInput>
-            <IonButton onClick={handleClick}>View Auditions</IonButton>
-          </div>
-          
-          <div id='form_data_summary'>
-          <h2>Auditions:</h2>
-          <p> Select a name to view a single audition</p>
-          <IonButton onClick={expandAll}>Expand All</IonButton>
-          <IonButton onClick={collapseAll}>Collapse All</IonButton>
-          {data && (
-            <ul>
-              {data.map((row: any, rowIndex: number) => (
-                rowIndex > 0 && (
-                  // Summary for each form
-                  <li key={rowIndex}>
-                    <details>
-                        <summary>
-                          {data[rowIndex][nameCol]}
-                        </summary>
-                      <ul>
-                        {Object.entries(row).map(([columnName, columnData], cellIndex: number) => (
-                          // Summary for each field in the form IF it's not null (MISSING)
-                          !nullCols.includes(parseInt(columnName)) && (
-                            <li key={columnName}>
-                              {parseInt(columnName) === urlColumn ? (
-                                <img src={generateThumbnailUrl(extractIdFromUrl(columnData))} alt="Thumbnail" />
-                              ) : (
-                                <>
-                                  <strong>{formFields[parseInt(columnName)]}: <br /> </strong>{columnData}
-                                </>
-                              )}
-                            </li>
-                          )                         
-                        ))}
-                      </ul>
-                    </details>
-                  </li>
-                )
-              ))}
-            </ul>
-          )}
+        <div id='instructions'>
+          <p>
+            To load audition data, paste the URL of the Sheet associated with your audition Form, and click 'View Auditions'
+          </p>
         </div>
-        </IonContent>
-        <IonFooter>
-          <IonToolbar>
+        <div id='url_submission'>
+          <IonInput label='URL:' value={givenUrl} ref={ionInputEl} onIonInput={handleInput}></IonInput>
+          <IonButton onClick={handleClick}>View Auditions</IonButton>
+        </div>
+        
+        <div id='form_data_summary'>
+        <h2>Auditions:</h2>
+        <p> Select a name to view a single audition</p>
+        <IonButton onClick={expandAll}>Expand All</IonButton>
+        <IonButton onClick={collapseAll}>Collapse All</IonButton>
+        {data && (
+          <ul>
+            {data.slice(1).map((row, rowIndex) => (
+              <li key={rowIndex}>
+                <details>
+                  <summary>{row[nameCol]}</summary>
+                  {Object.entries(row).map(([columnIndex, columnData], index) => (
+                    !nullCols.includes(parseInt(columnIndex)) && (
+                      <div key={index}>
+                        <p>{`${formFields[parseInt(columnIndex)]}: ${columnData}`}</p>
+                        {parseInt(columnIndex) === urlColumn && (
+                          <img src={generateThumbnailUrl(extractIdFromUrl(columnData))} alt="Thumbnail" />
+                        )}
+                      </div>
+                    )
+                  ))}
+                  <PDFDownloadLink
+                    document={<SingleAuditionPDF row={row} />}
+                    fileName={`${row[nameCol]}-audition.pdf`}
+                  >
+                    {({ loading }) => (loading ? 'Loading document...' : 'Export This Audition')}
+                  </PDFDownloadLink>
+                </details>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+      </IonContent>
+      <IonFooter>
+        <IonToolbar>
+          <div>
+            <p> Select 'Export All' to export all auditions as a single .pdf file</p>
             <div>
-              <p> Select 'Export All' to export all auditions as a single .pdf files</p>
-              {/* <p> Select 'Clear Data' to clear all data</p> */}
-              <div>
-              <IonButton>Export All</IonButton>
-              {/* <IonButton>Clear Data</IonButton> */}
-              </div>
+            <PDFDownloadLink
+              document={<AllAuditionsPDF data={data.slice(1)} formFields={formFields} />}
+              fileName="all-auditions.pdf"
+            >
+              {({ loading }) => (loading ? 'Loading document...' : 'Export All')}
+            </PDFDownloadLink>
+            {/* <PDFDownloadLink
+            document={<AllAuditionsPDF data={data} />}
+            fileName="all-auditions.pdf"
+            >
+            {({ loading }) => (loading ? 'Loading document...' : 'Export All Auditions')}
+            </PDFDownloadLink> */}
             </div>
-          </IonToolbar>
-        </IonFooter>
-      </IonPage>
-    </>
-  );
-};
+          </div>
+        </IonToolbar>
+      </IonFooter>
+    </IonPage>
+  </>
+);
 
 export default HomePage;
