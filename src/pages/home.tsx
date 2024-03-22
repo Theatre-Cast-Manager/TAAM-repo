@@ -255,19 +255,18 @@ const HomePage: React.FC = () => {
           </IonHeader>
           <div id='instructions'>
             <p>
-              To view your application submissions, please paste the URL of the sheet associated with your audition form.
+              To view auditions, paste the URL of the Sheet associated with your audition Form.
             </p>
           </div>
           <div id='url_submission'>
-            <h1>URL:</h1>
-            <IonInput label='sheet_url' value={givenUrl} ref={ionInputEl} onIonInput={handleInput}></IonInput>
-            <IonButton onClick={handleClick}>Submit URL</IonButton>
+            <IonInput label='URL:' value={givenUrl} ref={ionInputEl} onIonInput={handleInput}></IonInput>
+            <IonButton onClick={handleClick}>View Auditions</IonButton>
           </div>
           
           <div id='form_data_summary'>
-          <h2>Form Data:</h2>
-          <IonButton onClick={expandAll}>Expand</IonButton>
-          <IonButton onClick={collapseAll}>Collapse</IonButton>
+          <h2>Auditions:</h2>
+          <IonButton onClick={expandAll}>Expand All</IonButton>
+          <IonButton onClick={collapseAll}>Collapse All</IonButton>
           {data && (
             <ul>
               {data.map((row: any, rowIndex: number) => (
