@@ -14,6 +14,7 @@ import {
   IonMenu,
   IonMenuButton,
   IonInput,
+  IonFooter,
 } from "@ionic/react";
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { handleLogout } from "../authService";
@@ -21,11 +22,11 @@ import "./home.css";
 const googleSheetsApiKey = import.meta.env.VITE_GOOGLE_SHEETS_API_KEY;
 
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%                                        'Home' page                                           %%
+%%                                        'Home' page Typescript                                %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 const HomePage: React.FC = () => {
   /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  %%                                        Side Menu                                             %%
+  %%                                        Side Menu()                                           %%
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
   const [userName, setUserName] = useState<string | null>(null); // To store user's name
   const [userPhotoUrl, setUserPhotoUrl] = useState<string | null>(null);
@@ -61,7 +62,7 @@ const HomePage: React.FC = () => {
   };
 
   /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  %%                                     Get Data from URL                                        %%
+  %%                                     Get Data from URL()                                      %%
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    A reminder of what our input element looks like:
    <IonInput label='sheet_url' value={givenUrl} ref={ionInputEl} onIonInput={handleInput}></IonInput>
@@ -96,8 +97,6 @@ const HomePage: React.FC = () => {
 
     //Clear the input field
     setGivenUrl("");
-
-    //TODO - error handling
   }
 
   //Holds the form field information and the fetched data
@@ -147,9 +146,8 @@ const HomePage: React.FC = () => {
   }, [sheetID]);
     
   /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  %%                                           Parse Data                                         %%
+  %%                                           Parse Data()                                       %%
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
-
   //Holds information about our data that we need to properly display it
   const [urlColumn, setUrlColumn] = useState(-1);
   const [nullCols, setNullCols] = useState<number[]>([]);
@@ -185,7 +183,7 @@ const HomePage: React.FC = () => {
   })
 
   /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  %%                                          Display Data                                        %%
+  %%                                          Display Data()                                      %%
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
   //TODO: update alt tag with actor's name
   //Example call: <img src={generateThumbnailUrl(extractIdFromUrl(columnData))} alt="Thumbnail" />
@@ -206,7 +204,7 @@ const HomePage: React.FC = () => {
   };
 
   /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  %%                                    Expand/Collapse Elements                                  %%
+  %%                                    Expand/Collapse Elements()                                %%
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
   //These can be attatched to buttons to quickly expand or collapse all summary elements that hold form data
   const expandAll = () => {
@@ -225,6 +223,9 @@ const HomePage: React.FC = () => {
     });
   };
 
+/*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                        'home' page HTML                                      %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
   return (
     <>
       <IonMenu contentId="main-content" ref={menuRef}> {/* Attach the ref to IonMenu */}
@@ -255,7 +256,7 @@ const HomePage: React.FC = () => {
           </IonHeader>
           <div id='instructions'>
             <p>
-              To view auditions, paste the URL of the Sheet associated with your audition Form.
+              To load audition data, paste the URL of the Sheet associated with your audition Form, and click 'View Auditions'
             </p>
           </div>
           <div id='url_submission'>
@@ -265,6 +266,7 @@ const HomePage: React.FC = () => {
           
           <div id='form_data_summary'>
           <h2>Auditions:</h2>
+          <p> Select a name to view a single audition</p>
           <IonButton onClick={expandAll}>Expand All</IonButton>
           <IonButton onClick={collapseAll}>Collapse All</IonButton>
           {data && (
@@ -301,6 +303,18 @@ const HomePage: React.FC = () => {
           )}
         </div>
         </IonContent>
+        <IonFooter>
+          <IonToolbar>
+            <div>
+              <p> Select 'Export All' to export all auditions as a single .pdf files</p>
+              {/* <p> Select 'Clear Data' to clear all data</p> */}
+              <div>
+              <IonButton>Export All</IonButton>
+              {/* <IonButton>Clear Data</IonButton> */}
+              </div>
+            </div>
+          </IonToolbar>
+        </IonFooter>
       </IonPage>
     </>
   );
