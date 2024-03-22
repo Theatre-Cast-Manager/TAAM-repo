@@ -16,6 +16,15 @@ import {
   IonInput,
   IonFooter,
 } from "@ionic/react";
+import {
+  Document,
+  Page,
+  Text,
+  View,
+  StyleSheet,
+  PDFViewer,
+  Image
+} from "@react-pdf/renderer";
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { handleLogout } from "../authService";
 import "./home.css";
@@ -223,6 +232,31 @@ const HomePage: React.FC = () => {
     });
   };
 
+  /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  %%                                         Generate PDF()                                       %%
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
+
+  const styles = StyleSheet.create({
+    page: { //Strange formating came from an example tutorial
+      backgroundColor: "#d11fb6",
+      color: "white",
+    },
+    section: {
+      margin: 10,
+      padding: 10,
+    },
+    viewer: {
+      width: window.innerWidth / 2, //the pdf viewer will take up all of the width and height
+      height: window.innerHeight / 2,
+    }, 
+    listItem: {
+      marginBottom: 5
+    },
+    summary: {
+      fontWeight: 'bold'
+    }
+  });
+
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                        'home' page HTML                                      %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
@@ -301,7 +335,47 @@ const HomePage: React.FC = () => {
               ))}
             </ul>
           )}
+          <div id='pdf_preview'>
+          <details>
+            <summary>Preview PDF</summary>
+              <PDFViewer style={styles.viewer}>
+                {/* Start of the document*/}
+                <Document>
+                  {/*render a single page*/}
+                  <Page size="A4" style={styles.page}>
+                    <View style={styles.section}>
+                      {data &&
+                        data.map((row: any, rowIndex: number) => (
+                          rowIndex > 0 && (
+                            <View style={styles.section} key={rowIndex}>
+                              <Text style={styles.summary}>{data[rowIndex][nameCol]}</Text>
+                              <View style={styles.listItem}>
+                                {Object.entries(row).map(([columnName, columnData], cellIndex: number) => (
+                                  !nullCols.includes(parseInt(columnName)) && (
+                                    <View style={styles.listItem} key={columnName}>
+                                      {parseInt(columnName) === urlColumn ? (
+                                        <Image src={generateThumbnailUrl(extractIdFromUrl(columnData))} alt="Thumbnail" />
+                                      ) : (
+                                        <>
+                                          <Text style={{ fontWeight: 'bold' }}>{formFields[parseInt(columnName)]}: </Text>
+                                          <Text>{String(columnData)}</Text>
+                                        </>
+                                      )}
+                                    </View>
+                                  )
+                                ))}
+                              </View>
+                            </View>
+                          )
+                        ))}
+                    </View>
+                  </Page>
+                </Document>
+              </PDFViewer>
+            </details>
+          </div>
         </div>
+        
         </IonContent>
         <IonFooter>
           <IonToolbar>
