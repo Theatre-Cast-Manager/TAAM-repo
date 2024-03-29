@@ -14,17 +14,19 @@ import {
   IonMenu,
   IonMenuButton,
   IonInput,
+  IonFooter,
 } from "@ionic/react";
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { handleLogout } from "../authService";
 import "./home.css";
+const googleSheetsApiKey = import.meta.env.VITE_GOOGLE_SHEETS_API_KEY;
 
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%                                        'Home' page                                           %%
+%%                                        'Home' page Typescript                                %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 const HomePage: React.FC = () => {
   /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  %%                                        Login functionality                                   %%
+  %%                                        Side Menu()                                           %%
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
   const [userName, setUserName] = useState<string | null>(null); // To store user's name
   const [userPhotoUrl, setUserPhotoUrl] = useState<string | null>(null);
@@ -60,13 +62,13 @@ const HomePage: React.FC = () => {
   };
 
   /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  %%                                  Data Gathering Functionality                                %%
-  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
-  //A reminder of what our input element looks like:
-  // <IonInput label='sheet_url' value={givenUrl} ref={ionInputEl} onIonInput={handleInput}></IonInput>
-  // the value attribute controls what is displayed in the input field - we will clear this after the submit URL button has been clicked to clear the field
-  // the ref attribute allows us to connect our element to a reference we can use to manipulate the field and gather information from it
-  
+  %%                                     Get Data from URL()                                      %%
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+   A reminder of what our input element looks like:
+   <IonInput label='sheet_url' value={givenUrl} ref={ionInputEl} onIonInput={handleInput}></IonInput>
+   the value attribute controls what is displayed in the input field - we will clear this after the submit URL button has been clicked to clear the field
+   the ref attribute allows us to connect our element to a reference we can use to manipulate the field and gather information from it
+  */
   //Controls our input element (this is what we assign 'ref' in the input element)
   const ionInputEl = useRef<HTMLIonInputElement>(null);
 
@@ -95,36 +97,57 @@ const HomePage: React.FC = () => {
 
     //Clear the input field
     setGivenUrl("");
-
-    //TODO - error handling
   }
 
   //Holds the form field information and the fetched data
   const [data, setData] = useState<any>(null);
   const [formFields, setFormFields] = useState([]);
 
+  useEffect( () => {
+    const fetchData = async () => {
+      if(sheetID){
+        //url for fetching data = urlStart + sheetId + urlEnd = https://sheets.googleapis.com/v4/spreadsheets/[GIVENID]/values/Form Responses 1!A1:L27?key=API_KEY
+        const urlStart = "https://sheets.googleapis.com/v4/spreadsheets/";
+        const urlEnd = `/values/Form Responses 1!A1:AA100?key=${googleSheetsApiKey}`; //insert API key here
+        const urlComplete = urlStart + sheetID + urlEnd;
+  
+        try {
+          const response = await fetch(urlComplete);
+          if( !response.ok) {
+            throw new Error ("Failed to fetch data");
+          }
+          const jsonData = await response.json();
+          setData( jsonData.values );
+          setFormFields(jsonData.values[0]);
 
-  //TODO - API call to fetch data
-  //Something like...
-  // useEffect( () => {
-  //   const fetchData = async () => {
-  //   if(sheetID){
-  //     try{
-  //       //Here is where the API call would go
-  //       //If our call is successful we would set our 'data' variable and our 'formFields' value to be the first row from the 'data' array
-  //     }
-  //     catch(err){
-  //       console.error("Error in fetching data: ", err);
-  //     }
-  //   }
-  //  };
-  //  fetchData();
-  // }, [sheetID]) //sheetID is only updated after the submit button is clicked, so we can add it as a dependency.
+          const bundleViewer = document.getElementById("form_data");
+          if(bundleViewer){
+            console.log("display");
+            bundleViewer.style.display = "block";
+          } else{
+            console.log("hide");
+          }
+        } catch (err) {
+          console.error("Error fetching data: ", err);
+        }
+      }
+    };
 
+    const testDisplay = document.getElementById("test_display");
+    const testDisplay2 = document.getElementById("test_display2");
+    if (testDisplay) {
+      testDisplay.style.display = "none";
+    }
+    if (testDisplay2) {
+      testDisplay2.style.display = "none";
+    }
+
+    fetchData();
+  }, [sheetID]);
+    
   /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  %%                                  Data Parsing Functionality                                  %%
+  %%                                           Parse Data()                                       %%
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
-
   //Holds information about our data that we need to properly display it
   const [urlColumn, setUrlColumn] = useState(-1);
   const [nullCols, setNullCols] = useState<number[]>([]);
@@ -160,7 +183,7 @@ const HomePage: React.FC = () => {
   })
 
   /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  %%                                  Image Display Functionality                                 %%
+  %%                                          Display Data()                                      %%
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
   //TODO: update alt tag with actor's name
   //Example call: <img src={generateThumbnailUrl(extractIdFromUrl(columnData))} alt="Thumbnail" />
@@ -181,7 +204,7 @@ const HomePage: React.FC = () => {
   };
 
   /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  %%                                 Developer/User Functionality                                 %%
+  %%                                    Expand/Collapse Elements()                                %%
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
   //These can be attatched to buttons to quickly expand or collapse all summary elements that hold form data
   const expandAll = () => {
@@ -200,6 +223,9 @@ const HomePage: React.FC = () => {
     });
   };
 
+/*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                        'home' page HTML                                      %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
   return (
     <>
       <IonMenu contentId="main-content" ref={menuRef}> {/* Attach the ref to IonMenu */}
@@ -230,15 +256,65 @@ const HomePage: React.FC = () => {
           </IonHeader>
           <div id='instructions'>
             <p>
-              To view your application submissions, please paste the URL of the sheet associated with your audition form.
+              To load audition data, paste the URL of the Sheet associated with your audition Form, and click 'View Auditions'
             </p>
           </div>
           <div id='url_submission'>
-            <h1>URL:</h1>
-            <IonInput label='sheet_url' value={givenUrl} ref={ionInputEl} onIonInput={handleInput}></IonInput>
-            <IonButton onClick={handleClick}>Submit URL</IonButton>
+            <IonInput label='URL:' value={givenUrl} ref={ionInputEl} onIonInput={handleInput}></IonInput>
+            <IonButton onClick={handleClick}>View Auditions</IonButton>
           </div>
+          
+          <div id='form_data_summary'>
+          <h2>Auditions:</h2>
+          <p> Select a name to view a single audition</p>
+          <IonButton onClick={expandAll}>Expand All</IonButton>
+          <IonButton onClick={collapseAll}>Collapse All</IonButton>
+          {data && (
+            <ul>
+              {data.map((row: any, rowIndex: number) => (
+                rowIndex > 0 && (
+                  // Summary for each form
+                  <li key={rowIndex}>
+                    <details>
+                        <summary>
+                          {data[rowIndex][nameCol]}
+                        </summary>
+                      <ul>
+                        {Object.entries(row).map(([columnName, columnData], cellIndex: number) => (
+                          // Summary for each field in the form IF it's not null (MISSING)
+                          !nullCols.includes(parseInt(columnName)) && (
+                            <li key={columnName}>
+                              {parseInt(columnName) === urlColumn ? (
+                                <img src={generateThumbnailUrl(extractIdFromUrl(columnData))} alt="Thumbnail" />
+                              ) : (
+                                <>
+                                  <strong>{formFields[parseInt(columnName)]}: <br /> </strong>{columnData}
+                                </>
+                              )}
+                            </li>
+                          )                         
+                        ))}
+                      </ul>
+                    </details>
+                  </li>
+                )
+              ))}
+            </ul>
+          )}
+        </div>
         </IonContent>
+        <IonFooter>
+          <IonToolbar>
+            <div>
+              <p> Select 'Export All' to export all auditions as a single .pdf files</p>
+              {/* <p> Select 'Clear Data' to clear all data</p> */}
+              <div>
+              <IonButton>Export All</IonButton>
+              {/* <IonButton>Clear Data</IonButton> */}
+              </div>
+            </div>
+          </IonToolbar>
+        </IonFooter>
       </IonPage>
     </>
   );
