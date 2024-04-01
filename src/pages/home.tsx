@@ -331,9 +331,10 @@ const SingleAuditionPDF = ({ row }) => {
                   {Object.entries(row).map(([columnIndex, columnData], index) => (
                     !nullCols.includes(parseInt(columnIndex)) && (
                       <div key={index}>
-                        <p>{`${formFields[parseInt(columnIndex)]}: ${columnData}`}</p>
-                        {parseInt(columnIndex) === urlColumn && (
+                        {parseInt(columnIndex) === urlColumn ? (
                           <img src={generateThumbnailUrl(extractIdFromUrl(columnData))} alt="Thumbnail" />
+                        ) : (
+                          <p>{`${formFields[parseInt(columnIndex)]}: ${columnData}`}</p>
                         )}
                       </div>
                     )
