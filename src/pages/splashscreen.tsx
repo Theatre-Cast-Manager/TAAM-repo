@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import './splashscreen.css'; // Import your CSS file
 
-const SplashScreen: React.FC = () => {
+const SplashScreenPC: React.FC = () => {
   const [showSplash, setShowSplash] = useState(true);
 
   useEffect(() => {
@@ -19,4 +19,4 @@ const SplashScreen: React.FC = () => {
   ) : null;
 };
 
-export default SplashScreen;
+export default SplashScreenPC;

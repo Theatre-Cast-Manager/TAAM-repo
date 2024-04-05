@@ -237,7 +237,7 @@ const HomePage: React.FC = () => {
         {/* Attach the ref to IonMenu */}
         <IonHeader>
           <IonToolbar>
-            <IonTitle>Your Account</IonTitle>
+            <IonTitle id="yourAccount">Your Account</IonTitle>
           </IonToolbar>
         </IonHeader>
         <IonContent className="ion-padding">
@@ -246,8 +246,8 @@ const HomePage: React.FC = () => {
               src={userPhotoUrl || "../../public/test_logo.jpg"}
               alt="User Profile"
             />
-            <h1>{userName}</h1> {/* Display the user's name */}
-            <IonButton onClick={logout}>Logout</IonButton>
+            <h1 id="userName">{userName}</h1> {/* Display the user's name */}
+            <IonButton id="logoutButton" onClick={logout}>Logout</IonButton>
           </div>
         </IonContent>
       </IonMenu>
@@ -276,14 +276,14 @@ const HomePage: React.FC = () => {
               ref={ionInputEl}
               onIonInput={handleInput}
             ></IonInput>
-            <IonButton onClick={handleClick}>View Auditions</IonButton>
+            <IonButton id="auditionsButton"onClick={handleClick}>View Auditions</IonButton>
           </div>
 
           <div id="form_data_summary">
             <h2>Auditions:</h2>
             <p> Select a name to view a single audition</p>
-            <IonButton onClick={expandAll}>Expand All</IonButton>
-            <IonButton onClick={collapseAll}>Collapse All</IonButton>
+            <IonButton id="expandButton"onClick={expandAll}>Expand All</IonButton>
+            <IonButton id="collapseButton"onClick={collapseAll}>Collapse All</IonButton>
             {data && (
               <ul>
                 {data.map(
@@ -337,7 +337,7 @@ const HomePage: React.FC = () => {
               </p>
               {/* <p> Select 'Clear Data' to clear all data</p> */}
               <div>
-                <IonButton>Export All</IonButton>
+                <IonButton id="exportButton">Export All</IonButton>
                 {/* <IonButton>Clear Data</IonButton> */}
               </div>
             </div>

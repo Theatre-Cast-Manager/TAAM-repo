@@ -73,7 +73,7 @@ const Login: React.FC = () => {
           </IonToolbar>
         </IonHeader>
         <IonContent fullscreen>
-          <h1>Sign in with your Google Account</h1>
+          <h1 id="signIn">Sign in with your Google Account</h1>
           <div>
             {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
             {!userPhotoUrl && <IonButton onClick={login}>Sign in</IonButton>}
