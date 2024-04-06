@@ -1,8 +1,8 @@
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                       'Home' imports                                         %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
-import React, { useState, useEffect, useRef } from 'react';
-import { useHistory } from 'react-router-dom';
+import React, { useState, useEffect, useRef } from "react";
+import { useHistory } from "react-router-dom";
 import {
   IonContent,
   IonHeader,
@@ -16,7 +16,7 @@ import {
   IonInput,
   IonFooter,
 } from "@ionic/react";
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { handleLogout } from "../authService";
 import "./home.css";
 //pdf exporting impoorts
@@ -32,7 +32,7 @@ const HomePage: React.FC = () => {
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
   const [userName, setUserName] = useState<string | null>(null); // To store user's name
   const [userPhotoUrl, setUserPhotoUrl] = useState<string | null>(null);
-  const [errorMessage, setErrorMessage] = useState<string>('');
+  const [errorMessage, setErrorMessage] = useState<string>("");
   const history = useHistory(); // For navigation
   const menuRef = useRef<HTMLIonMenuElement>(null); // Ref for the IonMenu
 
@@ -44,7 +44,7 @@ const HomePage: React.FC = () => {
         setUserName(user.displayName || "User"); // Set the user's name
       } else {
         // If not logged in, possibly redirect or handle accordingly
-        history.push('/login'); // Redirects to Login if not authenticated
+        history.push("/login"); // Redirects to Login if not authenticated
       }
     });
   }, [history]);
@@ -55,7 +55,8 @@ const HomePage: React.FC = () => {
         if (menuRef.current) {
           menuRef.current.close(); // Close the menu
         }
-        history.push('/login');
+
+        history.push("/login");
         console.log("Logout successful");
       })
       .catch((error) => {
@@ -87,7 +88,7 @@ const HomePage: React.FC = () => {
   const [sheetID, setSheetID] = useState("");
 
   //Sets our sheetID variable when the user submits a URL
-  const handleClick = ( e : Event ) => {
+  const handleClick = (e: Event) => {
     //Access the given URL indirectly (indirect because it is set in the handleInput() function)
     const value = givenUrl;
     const startIndex = value.indexOf("/d/") + 3;
@@ -96,38 +97,38 @@ const HomePage: React.FC = () => {
     //Extract the sheet ID from the givenURL and update our sheetID variable
     if (startIndex >= 0) {
       setSheetID(value.substring(startIndex, endIndex));
-    } 
+    }
 
     //Clear the input field
     setGivenUrl("");
-  }
+  };
 
   //Holds the form field information and the fetched data
   const [data, setData] = useState<any>(null);
   const [formFields, setFormFields] = useState([]);
 
-  useEffect( () => {
+  useEffect(() => {
     const fetchData = async () => {
-      if(sheetID){
+      if (sheetID) {
         //url for fetching data = urlStart + sheetId + urlEnd = https://sheets.googleapis.com/v4/spreadsheets/[GIVENID]/values/Form Responses 1!A1:L27?key=API_KEY
         const urlStart = "https://sheets.googleapis.com/v4/spreadsheets/";
         const urlEnd = `/values/Form Responses 1!A1:AA100?key=${googleSheetsApiKey}`; //insert API key here
         const urlComplete = urlStart + sheetID + urlEnd;
-  
+
         try {
           const response = await fetch(urlComplete);
-          if( !response.ok) {
-            throw new Error ("Failed to fetch data");
+          if (!response.ok) {
+            throw new Error("Failed to fetch data");
           }
           const jsonData = await response.json();
-          setData( jsonData.values );
+          setData(jsonData.values);
           setFormFields(jsonData.values[0]);
 
           const bundleViewer = document.getElementById("form_data");
-          if(bundleViewer){
+          if (bundleViewer) {
             console.log("display");
             bundleViewer.style.display = "block";
-          } else{
+          } else {
             console.log("hide");
           }
         } catch (err) {
@@ -147,7 +148,7 @@ const HomePage: React.FC = () => {
 
     fetchData();
   }, [sheetID]);
-    
+
   /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   %%                                           Parse Data()                                       %%
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
@@ -157,36 +158,38 @@ const HomePage: React.FC = () => {
   const [nameCol, setNameCol] = useState(-1);
 
   //Data parsing function
-  useEffect( () => {
+  useEffect(() => {
     const parseData = () => {
-      if(data){
+      if (data) {
         formFields.forEach((columnData, columnIndex) => {
           //Look for the name column
-          if(String(columnData).includes("name")){ 
+          if (String(columnData).includes("name")) {
             //might need to include more than one check here for thourough-ness
             setNameCol(columnIndex);
           }
           //Check for any null columns we may need to skip over later
-          if(!columnData){
-            setNullCols(prevNullCols => [
-              ...prevNullCols, 
-              Number(columnIndex)
+
+          if (!columnData) {
+            setNullCols((prevNullCols) => [
+              ...prevNullCols,
+              Number(columnIndex),
             ]);
           }
           //Determine which column holds the image url
           let firstRow = data[1];
           firstRow.forEach((columnData, columnIndex) => {
-            if(String(columnData).startsWith('http')){
+            if (String(columnData).startsWith("http")) {
               setUrlColumn(columnIndex);
             }
-          })
-        })
-      } else{
+
+          });
+        });
+      } else {
         console.log("data is null");
       }
-    }
+    };
     parseData();
-  })
+  });
 
   /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   %%                                          Display Data()                                      %%
@@ -202,7 +205,7 @@ const HomePage: React.FC = () => {
       return null; // We may want to update the handling here
     }
   };
-  
+
   const generateThumbnailUrl = (id) => {
     //console.log(`https://drive.google.com/thumbnail?sz=w300&id=${id}`);
     const width = 300;
@@ -214,7 +217,7 @@ const HomePage: React.FC = () => {
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
   //These can be attatched to buttons to quickly expand or collapse all summary elements that hold form data
   const expandAll = () => {
-    const summaries = document.querySelectorAll('summary');
+    const summaries = document.querySelectorAll("summary");
     summaries.forEach((summary: HTMLSummaryElement) => {
       const details = summary.parentElement as HTMLDetailsElement;
       details.open = true;
@@ -222,7 +225,7 @@ const HomePage: React.FC = () => {
   };
 
   const collapseAll = () => {
-    const summaries = document.querySelectorAll('summary');
+    const summaries = document.querySelectorAll("summary");
     summaries.forEach((summary: HTMLSummaryElement) => {
       const details = summary.parentElement as HTMLDetailsElement;
       details.open = false;
@@ -231,7 +234,7 @@ const HomePage: React.FC = () => {
 
 
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%                                        'home' page                                           %%
+%%                                        'home' page HTML                                      %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
 const styles = StyleSheet.create({
@@ -399,7 +402,7 @@ return (
         {/* Attach the ref to IonMenu */}
         <IonHeader>
           <IonToolbar>
-            <IonTitle>Your Account</IonTitle>
+            <IonTitle id="yourAccount">Your Account</IonTitle>
           </IonToolbar>
         </IonHeader>
         <IonContent className="ion-padding">
@@ -408,8 +411,8 @@ return (
               src={userPhotoUrl || "../../public/test_logo.jpg"}
               alt="User Profile"
             />
-            <h1>{userName}</h1> {/* Display the user's name */}
-            <IonButton onClick={logout}>Logout</IonButton>
+            <h1 id="userName">{userName}</h1> {/* Display the user's name */}
+            <IonButton id="logoutButton" onClick={logout}>Logout</IonButton>
           </div>
         </IonContent>
       </IonMenu>
@@ -438,14 +441,15 @@ return (
               ref={ionInputEl}
               onIonInput={handleInput}
             ></IonInput>
-            <IonButton onClick={handleClick}>View Auditions</IonButton>
+
+            <IonButton id="auditionsButton"onClick={handleClick}>View Auditions</IonButton>
           </div>
 
           <div id="form_data_summary">
             <h2>Auditions:</h2>
             <p> Select a name to view a single audition</p>
-            <IonButton onClick={expandAll}>Expand All</IonButton>
-            <IonButton onClick={collapseAll}>Collapse All</IonButton>
+            <IonButton id="expandButton"onClick={expandAll}>Expand All</IonButton>
+            <IonButton id="collapseButton"onClick={collapseAll}>Collapse All</IonButton>
             {data && (
               <ul>
                 {data.map(
@@ -499,7 +503,8 @@ return (
               </p>
               {/* <p> Select 'Clear Data' to clear all data</p> */}
               <div>
-                <IonButton>Export All</IonButton>
+
+                <IonButton id="exportButton">Export All</IonButton>
                 {/* <IonButton>Clear Data</IonButton> */}
               </div>
             </div>

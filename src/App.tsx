@@ -1,7 +1,7 @@
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                      Import Statements                                       %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Redirect, Route } from "react-router-dom";
 import {
   IonApp,
@@ -19,6 +19,7 @@ import { ellipse, square, triangle, folder, images } from "ionicons/icons";
 import HomePage from "./pages/home";
 import Tab2 from "./pages/Tab2";
 import LoginPage from "./pages/Login";
+import SplashScreenPC from './pages/splashscreen';
 
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/react/css/core.css";
@@ -45,7 +46,15 @@ import "./theme/variables.css";
 setupIonicReact();
 
 const App: React.FC = () => {
+  const [showSplash, setShowSplash] = useState(true);
+
   useEffect(() => {
+    setTimeout(() => {
+      setShowSplash(false);
+    }, 2500);
+  }, []);
+  useEffect(() => { // Mobile Splashscreen
+    SplashScreen.show();
     SplashScreen.hide(); // Hide the splash screen once the app is ready
   }, []);
 
@@ -54,6 +63,9 @@ const App: React.FC = () => {
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
   return (
     <IonApp>
+      {showSplash ? (
+        <SplashScreenPC/>
+      ) : (
       <IonReactRouter>
         <IonRouterOutlet>
           {/* Routes: define different pages of application and their corresponding URL paths. */}
@@ -64,6 +76,7 @@ const App: React.FC = () => {
           <Redirect exact from="/" to="/login" />
         </IonRouterOutlet>
       </IonReactRouter>
+      )}
     </IonApp>
   );
 };

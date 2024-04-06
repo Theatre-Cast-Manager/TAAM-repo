@@ -1,0 +1,28 @@
+@import url('https://fonts.googleapis.com/css2?family=Bodoni+Moda:wght@700&display=swap');
+
+  ion-content {
+    --background: darkred;
+  }
+  
+  ion-button {
+    font-family: 'Bodoni MT Condensed', serif;
+    --color: yellow;
+    --background: black;
+    display: block;
+    margin: auto;
+    width: 500px;
+    height: 125px;
+    font-size: 3rem;
+  }
+
+  ion-toolbar {
+    --background: rgb(207, 0, 0);
+  }
+
+  #signIn {
+    font-family: 'Bodoni MT Condensed', serif;
+    color: yellow;
+    text-align: center;
+    padding: 200px;
+    font-size: 70px !important;
+  }
