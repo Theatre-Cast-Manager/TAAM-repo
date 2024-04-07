@@ -20,7 +20,14 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { handleLogout } from "../authService";
 import "./home.css";
 //pdf exporting impoorts
-import { PDFDownloadLink, Page, Text, View, Document, StyleSheet } from '@react-pdf/renderer';
+import {
+  PDFDownloadLink,
+  Page,
+  Text,
+  View,
+  Document,
+  StyleSheet,
+} from "@react-pdf/renderer";
 const googleSheetsApiKey = import.meta.env.VITE_GOOGLE_SHEETS_API_KEY;
 
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -68,10 +75,10 @@ const HomePage: React.FC = () => {
   /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   %%                                     Get Data from URL()                                      %%
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-   A reminder of what our input element looks like:
-   <IonInput label='sheet_url' value={givenUrl} ref={ionInputEl} onIonInput={handleInput}></IonInput>
-   the value attribute controls what is displayed in the input field - we will clear this after the submit URL button has been clicked to clear the field
-   the ref attribute allows us to connect our element to a reference we can use to manipulate the field and gather information from it
+  A reminder of what our input element looks like:
+  <IonInput label='sheet_url' value={givenUrl} ref={ionInputEl} onIonInput={handleInput}></IonInput>
+  the value attribute controls what is displayed in the input field - we will clear this after the submit URL button has been clicked to clear the field
+  the ref attribute allows us to connect our element to a reference we can use to manipulate the field and gather information from it
   */
   //Controls our input element (this is what we assign 'ref' in the input element)
   const ionInputEl = useRef<HTMLIonInputElement>(null);
@@ -181,7 +188,6 @@ const HomePage: React.FC = () => {
             if (String(columnData).startsWith("http")) {
               setUrlColumn(columnIndex);
             }
-
           });
         });
       } else {
@@ -232,31 +238,30 @@ const HomePage: React.FC = () => {
     });
   };
 
-
-/*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                        'home' page HTML                                      %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
-const styles = StyleSheet.create({
-  page: { flexDirection: 'column', padding: 10 },
-  section: { margin: 5, padding: 5 },
-  text: { margin: 12, fontSize: 14 },
-});
+  const styles = StyleSheet.create({
+    page: { flexDirection: "column", padding: 10 },
+    section: { margin: 5, padding: 5 },
+    text: { margin: 12, fontSize: 14 },
+  });
 
-const SingleAuditionPDF = ({ row }) => {
-  return (
-    <Document>
-      <Page style={styles.page}>
-        {row.map((dataPoint, index) => (
-          <View key={index} style={styles.section}>
-            <Text style={styles.text}>{dataPoint}</Text>
-          </View>
-        ))}
-      </Page>
-    </Document>
-  );
-};
-  
+  const SingleAuditionPDF = ({ row }) => {
+    return (
+      <Document>
+        <Page style={styles.page}>
+          {row.map((dataPoint, index) => (
+            <View key={index} style={styles.section}>
+              <Text style={styles.text}>{dataPoint}</Text>
+            </View>
+          ))}
+        </Page>
+      </Document>
+    );
+  };
+
   const AllAuditionsPDF = ({ data }) => (
     <Document>
       {data.map((row, rowIndex) => (
@@ -270,139 +275,25 @@ const SingleAuditionPDF = ({ row }) => {
       ))}
     </Document>
   );
-  
-    return (
-      // <Document>
-      //   {data.slice(1).map((row, rowIndex) => (
-      //     <Page key={rowIndex} style={styles.page}>
-      //       {row.map((value, index) => (
-      //         <View key={index} style={styles.section}>
-      //           <Text>{`${data[0][index]}: ${value}`}</Text>
-      //         </View>
-      //       ))}
-      //     </Page>
-      //   ))}
-      // </Document>
 
-      <>
-    <IonMenu contentId="main-content" ref={menuRef}>
-      <IonHeader>
-        <IonToolbar>
-          <IonTitle>Your Account</IonTitle>
-        </IonToolbar>
-      </IonHeader>
-      <IonContent className="ion-padding">
-        <div className="profile">
-          <img src={userPhotoUrl || '../../public/test_logo.jpg'} alt="User Profile" />
-          <h1>{userName}</h1>
-          <IonButton onClick={logout}>Logout</IonButton>
-        </div>
-      </IonContent>
-    </IonMenu>
+  return (
+    // <Document>
+    //   {data.slice(1).map((row, rowIndex) => (
+    //     <Page key={rowIndex} style={styles.page}>
+    //       {row.map((value, index) => (
+    //         <View key={index} style={styles.section}>
+    //           <Text>{`${data[0][index]}: ${value}`}</Text>
+    //         </View>
+    //       ))}
+    //     </Page>
+    //   ))}
+    // </Document>
 
-    <IonPage id="main-content">
-      <IonButtons slot="start">
-        <IonMenuButton></IonMenuButton>
-      </IonButtons>
-
-      <IonContent fullscreen>
-        <IonHeader collapse="condense">
-          <IonToolbar>
-            <IonTitle size="large">Holla</IonTitle>
-          </IonToolbar>
-        </IonHeader>
-        <div id='instructions'>
-          <p>
-            To load audition data, paste the URL of the Sheet associated with your audition Form, and click 'View Auditions'
-          </p>
-        </div>
-        <div id='url_submission'>
-          <IonInput label='URL:' 
-            value={givenUrl} 
-            ref={ionInputEl} 
-            onIonInput={handleInput}
-            ></IonInput>
-          <IonButton onClick={handleClick}>View Auditions</IonButton>
-        </div>
-        
-        <div id='form_data_summary'>
-        <h2>Auditions:</h2>
-        <p> Select a name to view a single audition</p>
-        <IonButton onClick={expandAll}>Expand All</IonButton>
-        <IonButton onClick={collapseAll}>Collapse All</IonButton>
-        {data && (
-          <ul>
-            {data.map((row, rowIndex) => (
-              rowIndex > 0 && (
-                <li key={rowIndex}>
-                <details>
-                  <summary>{row[nameCol]}</summary>
-                  {Object.entries(row).map(([columnIndex, columnData], index) => (
-                    !nullCols.includes(parseInt(columnIndex)) && (
-                      <div key={index}>
-                        {parseInt(columnIndex) === urlColumn ? (
-                          <img src={generateThumbnailUrl(extractIdFromUrl(columnData))} alt="Thumbnail" />
-                        ) : (
-                          <p>{`${formFields[parseInt(columnIndex)]}: ${columnData}`}</p>
-                        )}
-                      </div>
-                    )
-                  ))}
-                  <PDFDownloadLink
-                    document={<SingleAuditionPDF row={row} />}
-                    fileName={`${row[nameCol]}-audition.pdf`}
-                  >
-                    {({ loading }) => (loading ? 'Loading document...' : 'Export This Audition')}
-                  </PDFDownloadLink>
-                </details>
-              </li>
-              )         
-            ))
-            }
-          </ul>
-        )}
-      </div>
-      </IonContent>
-      <IonFooter>
-        <IonToolbar>
-          <div>
-            <p> Select 'Export All' to export all auditions as a single .pdf file</p>
-            <div>
-              {data && (
-                <PDFDownloadLink
-                  document={<AllAuditionsPDF data={data.slice(1)} formFields={formFields} />}
-                  fileName="all-auditions.pdf"
-                >
-                  {({ loading }) => (loading ? 'Loading document...' : 'Export All')}
-                </PDFDownloadLink>
-              )}
-            
-            {/* <PDFDownloadLink
-            document={<AllAuditionsPDF data={data} />}
-            fileName="all-auditions.pdf"
-            >
-            {({ loading }) => (loading ? 'Loading document...' : 'Export All Auditions')}
-            </PDFDownloadLink> */}
-            </div>
-          </div>
-        </IonToolbar>
-      </IonFooter>
-    </IonPage>
-  </>
-    );
-  };
-
-/*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%                     'home' page HTML from dev branch as of 04/05/2024                        %%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-return (
     <>
       <IonMenu contentId="main-content" ref={menuRef}>
-        {" "}
-        {/* Attach the ref to IonMenu */}
         <IonHeader>
           <IonToolbar>
-            <IonTitle id="yourAccount">Your Account</IonTitle>
+            <IonTitle>Your Account</IonTitle>
           </IonToolbar>
         </IonHeader>
         <IonContent className="ion-padding">
@@ -411,8 +302,8 @@ return (
               src={userPhotoUrl || "../../public/test_logo.jpg"}
               alt="User Profile"
             />
-            <h1 id="userName">{userName}</h1> {/* Display the user's name */}
-            <IonButton id="logoutButton" onClick={logout}>Logout</IonButton>
+            <h1>{userName}</h1>
+            <IonButton onClick={logout}>Logout</IonButton>
           </div>
         </IonContent>
       </IonMenu>
@@ -441,50 +332,51 @@ return (
               ref={ionInputEl}
               onIonInput={handleInput}
             ></IonInput>
-
-            <IonButton id="auditionsButton"onClick={handleClick}>View Auditions</IonButton>
+            <IonButton onClick={handleClick}>View Auditions</IonButton>
           </div>
 
           <div id="form_data_summary">
             <h2>Auditions:</h2>
             <p> Select a name to view a single audition</p>
-            <IonButton id="expandButton"onClick={expandAll}>Expand All</IonButton>
-            <IonButton id="collapseButton"onClick={collapseAll}>Collapse All</IonButton>
+            <IonButton onClick={expandAll}>Expand All</IonButton>
+            <IonButton onClick={collapseAll}>Collapse All</IonButton>
             {data && (
               <ul>
                 {data.map(
-                  (row: any, rowIndex: number) =>
+                  (row, rowIndex) =>
                     rowIndex > 0 && (
-                      // Summary for each form
                       <li key={rowIndex}>
                         <details>
-                          <summary>{data[rowIndex][nameCol]}</summary>
-                          <ul>
-                            {Object.entries(row).map(
-                              ([columnName, columnData], cellIndex: number) =>
-                                // Summary for each field in the form IF it's not null (MISSING)
-                                !nullCols.includes(parseInt(columnName)) && (
-                                  <li key={columnName}>
-                                    {parseInt(columnName) === urlColumn ? (
-                                      <img
-                                        src={generateThumbnailUrl(
-                                          extractIdFromUrl(columnData)
-                                        )}
-                                        alt="Thumbnail"
-                                      />
-                                    ) : (
-                                      <>
-                                        <strong>
-                                          {formFields[parseInt(columnName)]}:{" "}
-                                          <br />{" "}
-                                        </strong>
-                                        {columnData}
-                                      </>
-                                    )}
-                                  </li>
-                                )
-                            )}
-                          </ul>
+                          <summary>{row[nameCol]}</summary>
+                          {Object.entries(row).map(
+                            ([columnIndex, columnData], index) =>
+                              !nullCols.includes(parseInt(columnIndex)) && (
+                                <div key={index}>
+                                  {parseInt(columnIndex) === urlColumn ? (
+                                    <img
+                                      src={generateThumbnailUrl(
+                                        extractIdFromUrl(columnData)
+                                      )}
+                                      alt="Thumbnail"
+                                    />
+                                  ) : (
+                                    <p>{`${
+                                      formFields[parseInt(columnIndex)]
+                                    }: ${columnData}`}</p>
+                                  )}
+                                </div>
+                              )
+                          )}
+                          <PDFDownloadLink
+                            document={<SingleAuditionPDF row={row} />}
+                            fileName={`${row[nameCol]}-audition.pdf`}
+                          >
+                            {({ loading }) =>
+                              loading
+                                ? "Loading document..."
+                                : "Export This Audition"
+                            }
+                          </PDFDownloadLink>
                         </details>
                       </li>
                     )
@@ -499,13 +391,31 @@ return (
               <p>
                 {" "}
                 Select 'Export All' to export all auditions as a single .pdf
-                files
+                file
               </p>
-              {/* <p> Select 'Clear Data' to clear all data</p> */}
               <div>
+                {data && (
+                  <PDFDownloadLink
+                    document={
+                      <AllAuditionsPDF
+                        data={data.slice(1)}
+                        formFields={formFields}
+                      />
+                    }
+                    fileName="all-auditions.pdf"
+                  >
+                    {({ loading }) =>
+                      loading ? "Loading document..." : "Export All"
+                    }
+                  </PDFDownloadLink>
+                )}
 
-                <IonButton id="exportButton">Export All</IonButton>
-                {/* <IonButton>Clear Data</IonButton> */}
+                {/* <PDFDownloadLink
+            document={<AllAuditionsPDF data={data} />}
+            fileName="all-auditions.pdf"
+            >
+            {({ loading }) => (loading ? 'Loading document...' : 'Export All Auditions')}
+            </PDFDownloadLink> */}
               </div>
             </div>
           </IonToolbar>
@@ -513,8 +423,128 @@ return (
       </IonPage>
     </>
   );
+};
 
-*/
+/*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                     'home' page HTML from dev branch as of 04/05/2024                        %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
+// return (
+//     <>
+//       <IonMenu contentId="main-content" ref={menuRef}>
+//         {" "}
+//         {/* Attach the ref to IonMenu */}
+//         <IonHeader>
+//           <IonToolbar>
+//             <IonTitle id="yourAccount">Your Account</IonTitle>
+//           </IonToolbar>
+//         </IonHeader>
+//         <IonContent className="ion-padding">
+//           <div className="profile">
+//             <img
+//               src={userPhotoUrl || "../../public/test_logo.jpg"}
+//               alt="User Profile"
+//             />
+//             <h1 id="userName">{userName}</h1> {/* Display the user's name */}
+//             <IonButton id="logoutButton" onClick={logout}>Logout</IonButton>
+//           </div>
+//         </IonContent>
+//       </IonMenu>
 
+//       <IonPage id="main-content">
+//         <IonButtons slot="start">
+//           <IonMenuButton></IonMenuButton>
+//         </IonButtons>
+
+//         <IonContent fullscreen>
+//           <IonHeader collapse="condense">
+//             <IonToolbar>
+//               <IonTitle size="large">Holla</IonTitle>
+//             </IonToolbar>
+//           </IonHeader>
+//           <div id="instructions">
+//             <p>
+//               To load audition data, paste the URL of the Sheet associated with
+//               your audition Form, and click 'View Auditions'
+//             </p>
+//           </div>
+//           <div id="url_submission">
+//             <IonInput
+//               label="URL:"
+//               value={givenUrl}
+//               ref={ionInputEl}
+//               onIonInput={handleInput}
+//             ></IonInput>
+
+//             <IonButton id="auditionsButton"onClick={handleClick}>View Auditions</IonButton>
+//           </div>
+
+//           <div id="form_data_summary">
+//             <h2>Auditions:</h2>
+//             <p> Select a name to view a single audition</p>
+//             <IonButton id="expandButton"onClick={expandAll}>Expand All</IonButton>
+//             <IonButton id="collapseButton"onClick={collapseAll}>Collapse All</IonButton>
+//             {data && (
+//               <ul>
+//                 {data.map(
+//                   (row: any, rowIndex: number) =>
+//                     rowIndex > 0 && (
+//                       // Summary for each form
+//                       <li key={rowIndex}>
+//                         <details>
+//                           <summary>{data[rowIndex][nameCol]}</summary>
+//                           <ul>
+//                             {Object.entries(row).map(
+//                               ([columnName, columnData], cellIndex: number) =>
+//                                 // Summary for each field in the form IF it's not null (MISSING)
+//                                 !nullCols.includes(parseInt(columnName)) && (
+//                                   <li key={columnName}>
+//                                     {parseInt(columnName) === urlColumn ? (
+//                                       <img
+//                                         src={generateThumbnailUrl(
+//                                           extractIdFromUrl(columnData)
+//                                         )}
+//                                         alt="Thumbnail"
+//                                       />
+//                                     ) : (
+//                                       <>
+//                                         <strong>
+//                                           {formFields[parseInt(columnName)]}:{" "}
+//                                           <br />{" "}
+//                                         </strong>
+//                                         {columnData}
+//                                       </>
+//                                     )}
+//                                   </li>
+//                                 )
+//                             )}
+//                           </ul>
+//                         </details>
+//                       </li>
+//                     )
+//                 )}
+//               </ul>
+//             )}
+//           </div>
+//         </IonContent>
+//         <IonFooter>
+//           <IonToolbar>
+//             <div>
+//               <p>
+//                 {" "}
+//                 Select 'Export All' to export all auditions as a single .pdf
+//                 files
+//               </p>
+//               {/* <p> Select 'Clear Data' to clear all data</p> */}
+//               <div>
+
+//                 <IonButton id="exportButton">Export All</IonButton>
+//                 {/* <IonButton>Clear Data</IonButton> */}
+//               </div>
+//             </div>
+//           </IonToolbar>
+//         </IonFooter>
+//       </IonPage>
+//     </>
+//   );
 
 export default HomePage;
