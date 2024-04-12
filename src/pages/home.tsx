@@ -30,6 +30,7 @@ import {
   StyleSheet,
 } from "@react-pdf/renderer";
 const googleSheetsApiKey = import.meta.env.VITE_GOOGLE_SHEETS_API_KEY;
+  //this ^ key is a generic API key for our entire project, not just Google Sheets. See Google Cloud Console
 
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                        'Home' page Typescript                                %%
