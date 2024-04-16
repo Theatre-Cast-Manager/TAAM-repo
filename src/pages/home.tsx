@@ -294,7 +294,7 @@ const HomePage: React.FC = () => {
       <IonMenu contentId="main-content" ref={menuRef}>
         <IonHeader>
           <IonToolbar>
-            <IonTitle>Your Account</IonTitle>
+            <IonTitle id="yourAccount">Your Account</IonTitle>
           </IonToolbar>
         </IonHeader>
         <IonContent className="ion-padding">
@@ -303,8 +303,8 @@ const HomePage: React.FC = () => {
               src={userPhotoUrl || "../../public/test_logo.jpg"}
               alt="User Profile"
             />
-            <h1>{userName}</h1>
-            <IonButton onClick={logout}>Logout</IonButton>
+            <h1 id="userName">{userName}</h1>
+            <IonButton id="logoutButton" onClick={logout}>Logout</IonButton>
           </div>
         </IonContent>
       </IonMenu>
@@ -333,14 +333,14 @@ const HomePage: React.FC = () => {
               ref={ionInputEl}
               onIonInput={handleInput}
             ></IonInput>
-            <IonButton onClick={handleClick}>View Auditions</IonButton>
+            <IonButton id="auditionsButton" onClick={handleClick}>View Auditions</IonButton>
           </div>
 
           <div id="form_data_summary">
             <h2>Auditions:</h2>
             <p> Select a name to view a single audition</p>
-            <IonButton onClick={expandAll}>Expand All</IonButton>
-            <IonButton onClick={collapseAll}>Collapse All</IonButton>
+            <IonButton id="expandButton" onClick={expandAll}>Expand All</IonButton>
+            <IonButton id="collapseButton" onClick={collapseAll}>Collapse All</IonButton>
             {data && (
               <ul>
                 {data.map(
