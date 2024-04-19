@@ -19,7 +19,17 @@ import {
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { handleLogout } from "../authService";
 import "./home.css";
+//pdf exporting impoorts
+import {
+  PDFDownloadLink,
+  Page,
+  Text,
+  View,
+  Document,
+  StyleSheet,
+} from "@react-pdf/renderer";
 const googleSheetsApiKey = import.meta.env.VITE_GOOGLE_SHEETS_API_KEY;
+//this ^ key is a generic API key for our entire project, not just Google Sheets. See Google Cloud Console
 
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                        'Home' page Typescript                                %%
@@ -53,6 +63,7 @@ const HomePage: React.FC = () => {
         if (menuRef.current) {
           menuRef.current.close(); // Close the menu
         }
+
         history.push("/login");
         console.log("Logout successful");
       })
@@ -65,10 +76,10 @@ const HomePage: React.FC = () => {
   /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   %%                                     Get Data from URL()                                      %%
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-   A reminder of what our input element looks like:
-   <IonInput label='sheet_url' value={givenUrl} ref={ionInputEl} onIonInput={handleInput}></IonInput>
-   the value attribute controls what is displayed in the input field - we will clear this after the submit URL button has been clicked to clear the field
-   the ref attribute allows us to connect our element to a reference we can use to manipulate the field and gather information from it
+  A reminder of what our input element looks like:
+  <IonInput label='sheet_url' value={givenUrl} ref={ionInputEl} onIonInput={handleInput}></IonInput>
+  the value attribute controls what is displayed in the input field - we will clear this after the submit URL button has been clicked to clear the field
+  the ref attribute allows us to connect our element to a reference we can use to manipulate the field and gather information from it
   */
   //Controls our input element (this is what we assign 'ref' in the input element)
   const ionInputEl = useRef<HTMLIonInputElement>(null);
@@ -102,14 +113,13 @@ const HomePage: React.FC = () => {
 
   //Holds the form field information and the fetched data
   const [data, setData] = useState<any>(null);
-  const [formFields, setFormFields] = useState([]);
+  const [formFields, setFormFields] = useState<string[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
       if (sheetID) {
-        //url for fetching data = urlStart + sheetId + urlEnd = https://sheets.googleapis.com/v4/spreadsheets/[GIVENID]/values/Form Responses 1!A1:L27?key=API_KEY
         const urlStart = "https://sheets.googleapis.com/v4/spreadsheets/";
-        const urlEnd = `/values/Form Responses 1!A1:AA100?key=${googleSheetsApiKey}`; //insert API key here
+        const urlEnd = `/values/Form Responses 1!A1:AA100?key=${googleSheetsApiKey}`;
         const urlComplete = urlStart + sheetID + urlEnd;
 
         try {
@@ -118,15 +128,16 @@ const HomePage: React.FC = () => {
             throw new Error("Failed to fetch data");
           }
           const jsonData = await response.json();
+
+          if (jsonData && jsonData.values && jsonData.values.length > 0) {
+            setFormFields(jsonData.values[0]); // Set formFields with column headers
+          }
+
           setData(jsonData.values);
-          setFormFields(jsonData.values[0]);
 
           const bundleViewer = document.getElementById("form_data");
           if (bundleViewer) {
-            console.log("display");
             bundleViewer.style.display = "block";
-          } else {
-            console.log("hide");
           }
         } catch (err) {
           console.error("Error fetching data: ", err);
@@ -165,6 +176,7 @@ const HomePage: React.FC = () => {
             setNameCol(columnIndex);
           }
           //Check for any null columns we may need to skip over later
+
           if (!columnData) {
             setNullCols((prevNullCols) => [
               ...prevNullCols,
@@ -201,10 +213,8 @@ const HomePage: React.FC = () => {
     }
   };
 
-  const generateThumbnailUrl = (id) => {
-    //console.log(`https://drive.google.com/thumbnail?sz=w300&id=${id}`);
-    const width = 300;
-    return `https://drive.google.com/thumbnail?sz=w${width}&id=${id}`;
+  const generateImageUrl = (imageUrl) => {
+    return imageUrl;
   };
 
   /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -230,14 +240,71 @@ const HomePage: React.FC = () => {
   /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                        'home' page HTML                                      %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
+
+  const styles = StyleSheet.create({
+    page: { flexDirection: "column", padding: 10 },
+    section: { margin: 5, padding: 5 },
+    text: { fontSize: 12 },
+  });
+
+  const SingleAuditionPDF = ({ row, formFields }) => (
+    <Document>
+      <Page style={styles.page}>
+        {formFields.map((field, index) => {
+          const value = row[index];
+          if (parseInt(index) === urlColumn) {
+            // Render image URL as text for the column containing image URLs
+            return (
+              <View key={index} style={styles.section}>
+                <Text>{`${field}: ${generateImageUrl(value)}`}</Text>
+              </View>
+            );
+          } else {
+            // Render text data for other columns
+            return (
+              <View key={index} style={styles.section}>
+                <Text>{`${field}: ${value}`}</Text>
+              </View>
+            );
+          }
+        })}
+      </Page>
+    </Document>
+  );
+
+  const AllAuditionsPDF = ({ data, formFields }) => (
+    <Document>
+      {data.map((row, rowIndex) => (
+        <Page key={rowIndex} style={styles.page}>
+          {formFields.map((field, index) => {
+            const value = row[index];
+            if (parseInt(index) === urlColumn) {
+              // Render image URL as text for the column containing image URLs
+              return (
+                <View key={index} style={styles.section}>
+                  <Text>{`${field}: ${generateImageUrl(value)}`}</Text>
+                </View>
+              );
+            } else {
+              // Render text data for other columns
+              return (
+                <View key={index} style={styles.section}>
+                  <Text>{`${field}: ${value}`}</Text>
+                </View>
+              );
+            }
+          })}
+        </Page>
+      ))}
+    </Document>
+  );
+
   return (
     <>
       <IonMenu contentId="main-content" ref={menuRef}>
-        {" "}
-        {/* Attach the ref to IonMenu */}
         <IonHeader>
           <IonToolbar>
-            <IonTitle>Your Account</IonTitle>
+            <IonTitle id="yourAccount">Your Account</IonTitle>
           </IonToolbar>
         </IonHeader>
         <IonContent className="ion-padding">
@@ -246,8 +313,10 @@ const HomePage: React.FC = () => {
               src={userPhotoUrl || "../../public/test_logo.jpg"}
               alt="User Profile"
             />
-            <h1>{userName}</h1> {/* Display the user's name */}
-            <IonButton onClick={logout}>Logout</IonButton>
+            <h1 id="userName">{userName}</h1>
+            <IonButton id="logoutButton" onClick={logout}>
+              Logout
+            </IonButton>
           </div>
         </IonContent>
       </IonMenu>
@@ -276,49 +345,50 @@ const HomePage: React.FC = () => {
               ref={ionInputEl}
               onIonInput={handleInput}
             ></IonInput>
-            <IonButton onClick={handleClick}>View Auditions</IonButton>
+            <IonButton id="auditionsButton" onClick={handleClick}>
+              View Auditions
+            </IonButton>
           </div>
 
           <div id="form_data_summary">
             <h2>Auditions:</h2>
             <p> Select a name to view a single audition</p>
-            <IonButton onClick={expandAll}>Expand All</IonButton>
-            <IonButton onClick={collapseAll}>Collapse All</IonButton>
+            <IonButton id="expandButton" onClick={expandAll}>
+              Expand All
+            </IonButton>
+            <IonButton id="collapseButton" onClick={collapseAll}>
+              Collapse All
+            </IonButton>
             {data && (
               <ul>
                 {data.map(
-                  (row: any, rowIndex: number) =>
+                  (row, rowIndex) =>
                     rowIndex > 0 && (
-                      // Summary for each form
                       <li key={rowIndex}>
+                        {/* Details section to display data with column headers */}
                         <details>
-                          <summary>{data[rowIndex][nameCol]}</summary>
-                          <ul>
-                            {Object.entries(row).map(
-                              ([columnName, columnData], cellIndex: number) =>
-                                // Summary for each field in the form IF it's not null (MISSING)
-                                !nullCols.includes(parseInt(columnName)) && (
-                                  <li key={columnName}>
-                                    {parseInt(columnName) === urlColumn ? (
-                                      <img
-                                        src={generateThumbnailUrl(
-                                          extractIdFromUrl(columnData)
-                                        )}
-                                        alt="Thumbnail"
-                                      />
-                                    ) : (
-                                      <>
-                                        <strong>
-                                          {formFields[parseInt(columnName)]}:{" "}
-                                          <br />{" "}
-                                        </strong>
-                                        {columnData}
-                                      </>
-                                    )}
-                                  </li>
-                                )
-                            )}
-                          </ul>
+                          <summary>{row[nameCol]}</summary>
+                          {formFields.map((field, index) => (
+                            <div key={index}>
+                              <p>{`${field}: ${row[index]}`}</p>
+                            </div>
+                          ))}
+                          {/* Export to PDF link */}
+                          <PDFDownloadLink
+                            document={
+                              <SingleAuditionPDF
+                                row={row}
+                                formFields={formFields}
+                              />
+                            }
+                            fileName={`${row[nameCol]}-audition.pdf`}
+                          >
+                            {({ loading }) =>
+                              loading
+                                ? "Loading document..."
+                                : "Export This Audition"
+                            }
+                          </PDFDownloadLink>
                         </details>
                       </li>
                     )
@@ -333,12 +403,24 @@ const HomePage: React.FC = () => {
               <p>
                 {" "}
                 Select 'Export All' to export all auditions as a single .pdf
-                files
+                file
               </p>
-              {/* <p> Select 'Clear Data' to clear all data</p> */}
               <div>
-                <IonButton>Export All</IonButton>
-                {/* <IonButton>Clear Data</IonButton> */}
+                {data && (
+                  <PDFDownloadLink
+                    document={
+                      <AllAuditionsPDF
+                        data={data.slice(1)}
+                        formFields={formFields}
+                      />
+                    }
+                    fileName="all-auditions.pdf"
+                  >
+                    {({ loading }) =>
+                      loading ? "Loading document..." : "Export All"
+                    }
+                  </PDFDownloadLink>
+                )}
               </div>
             </div>
           </IonToolbar>

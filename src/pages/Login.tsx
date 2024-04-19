@@ -69,11 +69,11 @@ const Login: React.FC = () => {
       <IonPage>
         <IonHeader>
           <IonToolbar>
-            <IonTitle>TAAM logo here</IonTitle>
+          <IonImg src="TAAM.png" style={{ width: '200px', height: '200px', margin: 'auto'}} />
           </IonToolbar>
         </IonHeader>
         <IonContent fullscreen>
-          <h1>Sign in with your Google Account</h1>
+          <h1 id="signIn">Sign in with your Google Account</h1>
           <div>
             {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
             {!userPhotoUrl && <IonButton onClick={login}>Sign in</IonButton>}
