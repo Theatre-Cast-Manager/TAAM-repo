@@ -1,4 +1,3 @@
-// test comment
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                       'Home' imports                                         %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
@@ -214,10 +213,8 @@ const HomePage: React.FC = () => {
     }
   };
 
-  const generateThumbnailUrl = (id) => {
-    //console.log(`https://drive.google.com/thumbnail?sz=w300&id=${id}`);
-    const width = 300;
-    return `https://drive.google.com/thumbnail?sz=w${width}&id=${id}`;
+  const generateImageUrl = (imageUrl) => {
+    return imageUrl;
   };
 
   /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -253,11 +250,24 @@ const HomePage: React.FC = () => {
   const SingleAuditionPDF = ({ row, formFields }) => (
     <Document>
       <Page style={styles.page}>
-        {formFields.map((field, index) => (
-          <View key={index} style={styles.section}>
-            <Text>{`${field}: ${row[index]}`}</Text>
-          </View>
-        ))}
+        {formFields.map((field, index) => {
+          const value = row[index];
+          if (parseInt(index) === urlColumn) {
+            // Render image URL as text for the column containing image URLs
+            return (
+              <View key={index} style={styles.section}>
+                <Text>{`${field}: ${generateImageUrl(value)}`}</Text>
+              </View>
+            );
+          } else {
+            // Render text data for other columns
+            return (
+              <View key={index} style={styles.section}>
+                <Text>{`${field}: ${value}`}</Text>
+              </View>
+            );
+          }
+        })}
       </Page>
     </Document>
   );
@@ -266,11 +276,24 @@ const HomePage: React.FC = () => {
     <Document>
       {data.map((row, rowIndex) => (
         <Page key={rowIndex} style={styles.page}>
-          {formFields.map((field, index) => (
-            <View key={index} style={styles.section}>
-              <Text>{`${field}: ${row[index]}`}</Text>
-            </View>
-          ))}
+          {formFields.map((field, index) => {
+            const value = row[index];
+            if (parseInt(index) === urlColumn) {
+              // Render image URL as text for the column containing image URLs
+              return (
+                <View key={index} style={styles.section}>
+                  <Text>{`${field}: ${generateImageUrl(value)}`}</Text>
+                </View>
+              );
+            } else {
+              // Render text data for other columns
+              return (
+                <View key={index} style={styles.section}>
+                  <Text>{`${field}: ${value}`}</Text>
+                </View>
+              );
+            }
+          })}
         </Page>
       ))}
     </Document>
