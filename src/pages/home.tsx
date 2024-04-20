@@ -22,6 +22,7 @@ import "./home.css";
 //pdf exporting impoorts
 import {
   PDFDownloadLink,
+  Image,
   Page,
   Text,
   View,
@@ -214,7 +215,9 @@ const HomePage: React.FC = () => {
   };
 
   const generateImageUrl = (imageUrl) => {
-    return imageUrl;
+    const fileId = extractIdFromUrl(imageUrl);
+    const thumbnailWidth = 300; // Adjust thumbnail width as needed
+    return `https://drive.google.com/thumbnail?sz=w${thumbnailWidth}&id=${fileId}`;
   };
 
   /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -253,10 +256,12 @@ const HomePage: React.FC = () => {
         {formFields.map((field, index) => {
           const value = row[index];
           if (parseInt(index) === urlColumn) {
-            // Render image URL as text for the column containing image URLs
+            // Render image for the column containing image URLs
+            const imageUrl = generateImageUrl(value);
             return (
               <View key={index} style={styles.section}>
-                <Text>{`${field}: ${generateImageUrl(value)}`}</Text>
+                <Text>{`${field}:`}</Text>
+                <Image src={imageUrl} style={{ width: 200, height: 200 }} />
               </View>
             );
           } else {
@@ -279,10 +284,12 @@ const HomePage: React.FC = () => {
           {formFields.map((field, index) => {
             const value = row[index];
             if (parseInt(index) === urlColumn) {
-              // Render image URL as text for the column containing image URLs
+              // Render image for the column containing image URLs
+              const imageUrl = generateImageUrl(value);
               return (
                 <View key={index} style={styles.section}>
-                  <Text>{`${field}: ${generateImageUrl(value)}`}</Text>
+                  <Text>{`${field}:`}</Text>
+                  <Image src={imageUrl} style={{ width: 200, height: 200 }} />
                 </View>
               );
             } else {
