@@ -367,10 +367,10 @@ const HomePage: React.FC = () => {
                       <li key={rowIndex}>
                         {/* Details section to display data with column headers */}
                         <details>
-                          <summary>{row[nameCol]}</summary>
+                          <summary id="name">{row[nameCol]}</summary>
                           {formFields.map((field, index) => (
                             <div key={index}>
-                              <p>{`${field}: ${row[index]}`}</p>
+                              <p id="details">{`${field}: ${row[index]}`}</p>
                             </div>
                           ))}
                           {/* Export to PDF link */}
