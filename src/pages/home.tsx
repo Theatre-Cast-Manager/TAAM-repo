@@ -21,6 +21,11 @@ import { handleLogout } from "../authService";
 import "./home.css";
 //pdf exporting impoorts
 import { PDFDownloadLink, Page, Text, View, Document, StyleSheet } from '@react-pdf/renderer';
+
+declare global {
+  interface HTMLSummaryElement extends HTMLElement {}
+}
+
 const googleSheetsApiKey = import.meta.env.VITE_GOOGLE_SHEETS_API_KEY;
 
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
