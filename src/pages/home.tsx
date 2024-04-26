@@ -1,7 +1,7 @@
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                       'Home' imports                                         %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, MouseEventHandler } from "react";
 import { useHistory } from "react-router-dom";
 import {
   IonContent,
@@ -88,7 +88,7 @@ const HomePage: React.FC = () => {
   const [sheetID, setSheetID] = useState("");
 
   //Sets our sheetID variable when the user submits a URL
-  const handleClick = (e: Event) => {
+  const handleClick: MouseEventHandler<HTMLIonButtonElement> = (event) => {
     //Access the given URL indirectly (indirect because it is set in the handleInput() function)
     const value = givenUrl;
     const startIndex = value.indexOf("/d/") + 3;
