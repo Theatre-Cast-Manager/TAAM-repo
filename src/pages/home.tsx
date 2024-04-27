@@ -159,9 +159,9 @@ const HomePage: React.FC = () => {
   %%                                           Parse Data()                                       %%
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
   //Holds information about our data that we need to properly display it
-  const [urlColumn, setUrlColumn] = useState(-1);
+  const [urlColumn, setUrlColumn] = useState<number>(-1);
   const [nullCols, setNullCols] = useState<number[]>([]);
-  const [nameCol, setNameCol] = useState(-1);
+  const [nameCol, setNameCol] = useState<number>(-1);
 
   //Data parsing function
   useEffect(() => {
@@ -212,7 +212,7 @@ const HomePage: React.FC = () => {
     }
   };
 
-  const generateThumbnailUrl = (id) => {
+  const generateThumbnailUrl = (id: string) => {
     //console.log(`https://drive.google.com/thumbnail?sz=w300&id=${id}`);
     const width = 300;
     return `https://drive.google.com/thumbnail?sz=w${width}&id=${id}`;
@@ -249,7 +249,15 @@ const styles = StyleSheet.create({
   text: { margin: 12, fontSize: 14 },
 });
 
-const SingleAuditionPDF = ({ row }) => {
+interface SingleAuditionPDFProps {
+  row: string[];
+}
+
+interface AllAuditionPDFProps {
+  data: string[][];
+}
+
+const SingleAuditionPDF: React.FC<SingleAuditionPDFProps> = ({ row }) => {
   return (
     <Document>
       <Page style={styles.page}>
@@ -263,7 +271,7 @@ const SingleAuditionPDF = ({ row }) => {
   );
 };
   
-  const AllAuditionsPDF = ({ data }) => (
+  const AllAuditionsPDF: React.FC<AllAuditionPDFProps> = ({ data }) => (
     <Document>
       {data.map((row, rowIndex) => (
         <Page key={rowIndex} style={styles.page}>
@@ -376,7 +384,7 @@ const SingleAuditionPDF = ({ row }) => {
             <div>
               {data && (
                 <PDFDownloadLink
-                  document={<AllAuditionsPDF data={data.slice(1)} formFields={formFields} />}
+                  document={<AllAuditionsPDF data={data.slice(1)}/>}
                   fileName="all-auditions.pdf"
                 >
                   {({ loading }) => (loading ? 'Loading document...' : 'Export All')}
