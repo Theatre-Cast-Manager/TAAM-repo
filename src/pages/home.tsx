@@ -82,7 +82,7 @@ const HomePage: React.FC = () => {
   const ionInputEl = useRef<HTMLIonInputElement>(null);
 
   //Holds the URL given to us by the user
-  const [givenUrl, setGivenUrl] = useState("");
+  const [givenUrl, setGivenUrl] = useState<string>("");
 
   //Updates the URL given to us when the value in the input element is changed
   const handleInput = (e: CustomEvent) => {
@@ -90,7 +90,7 @@ const HomePage: React.FC = () => {
   };
 
   //Holds the sheetID we will feed to our API call
-  const [sheetID, setSheetID] = useState("");
+  const [sheetID, setSheetID] = useState<string>("");
 
   //Sets our sheetID variable when the user submits a URL
   const handleClick: MouseEventHandler<HTMLIonButtonElement> = (event) => {
@@ -109,8 +109,9 @@ const HomePage: React.FC = () => {
   };
 
   //Holds the form field information and the fetched data
-  const [data, setData] = useState<any>(null);
-  const [formFields, setFormFields] = useState([]);
+  const [data, setData] = useState<string[][] | null>(null);
+  const [formFields, setFormFields] = useState<string[]>([]);
+  
 
   useEffect(() => {
     const fetchData = async () => {
@@ -201,7 +202,7 @@ const HomePage: React.FC = () => {
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
   //TODO: update alt tag with actor's name
   //Example call: <img src={generateThumbnailUrl(extractIdFromUrl(columnData))} alt="Thumbnail" />
-  const extractIdFromUrl = (url) => {
+  const extractIdFromUrl = (url: string) => {
     const startIndex = url.indexOf("id=") + 3;
     if (startIndex >= 0) {
       return url.substring(startIndex);
