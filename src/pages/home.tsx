@@ -208,7 +208,7 @@ const HomePage: React.FC = () => {
       return url.substring(startIndex);
     } else {
       console.error("Invalid URL format");
-      return null; // We may want to update the handling here
+      return ""; // We may want to update the handling here
     }
   };
 
