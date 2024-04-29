@@ -1,7 +1,7 @@
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                       'Home' imports                                         %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, MouseEventHandler } from "react";
 import { useHistory } from "react-router-dom";
 import {
   IonContent,
@@ -28,13 +28,19 @@ import {
   Document,
   StyleSheet,
 } from "@react-pdf/renderer";
+import { ReactNode } from "react";
+
+declare global {
+  interface HTMLSummaryElement extends HTMLElement {}
+}
+
 const googleSheetsApiKey = import.meta.env.VITE_GOOGLE_SHEETS_API_KEY;
 //this ^ key is a generic API key for our entire project, not just Google Sheets. See Google Cloud Console
 
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                        'Home' page Typescript                                %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
-const HomePage: React.FC = () => {
+const HomePage: React.FC = (): ReactNode => {
   /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   %%                                        Side Menu()                                           %%
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
@@ -85,7 +91,7 @@ const HomePage: React.FC = () => {
   const ionInputEl = useRef<HTMLIonInputElement>(null);
 
   //Holds the URL given to us by the user
-  const [givenUrl, setGivenUrl] = useState("");
+  const [givenUrl, setGivenUrl] = useState<string>("");
 
   //Updates the URL given to us when the value in the input element is changed
   const handleInput = (e: CustomEvent) => {
@@ -93,10 +99,10 @@ const HomePage: React.FC = () => {
   };
 
   //Holds the sheetID we will feed to our API call
-  const [sheetID, setSheetID] = useState("");
+  const [sheetID, setSheetID] = useState<string>("");
 
   //Sets our sheetID variable when the user submits a URL
-  const handleClick = (e: Event) => {
+  const handleClick: MouseEventHandler<HTMLIonButtonElement> = (event) => {
     //Access the given URL indirectly (indirect because it is set in the handleInput() function)
     const value = givenUrl;
     const startIndex = value.indexOf("/d/") + 3;
@@ -112,7 +118,7 @@ const HomePage: React.FC = () => {
   };
 
   //Holds the form field information and the fetched data
-  const [data, setData] = useState<any>(null);
+  const [data, setData] = useState<string[][] | null>(null);
   const [formFields, setFormFields] = useState<string[]>([]);
 
   useEffect(() => {
@@ -161,9 +167,9 @@ const HomePage: React.FC = () => {
   %%                                           Parse Data()                                       %%
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
   //Holds information about our data that we need to properly display it
-  const [urlColumn, setUrlColumn] = useState(-1);
+  const [urlColumn, setUrlColumn] = useState<number>(-1);
   const [nullCols, setNullCols] = useState<number[]>([]);
-  const [nameCol, setNameCol] = useState(-1);
+  const [nameCol, setNameCol] = useState<number>(-1);
 
   //Data parsing function
   useEffect(() => {
@@ -203,18 +209,20 @@ const HomePage: React.FC = () => {
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
   //TODO: update alt tag with actor's name
   //Example call: <img src={generateThumbnailUrl(extractIdFromUrl(columnData))} alt="Thumbnail" />
-  const extractIdFromUrl = (url) => {
+  const extractIdFromUrl = (url: string) => {
     const startIndex = url.indexOf("id=") + 3;
     if (startIndex >= 0) {
       return url.substring(startIndex);
     } else {
       console.error("Invalid URL format");
-      return null; // We may want to update the handling here
+      return ""; // We may want to update the handling here
     }
   };
 
-  const generateImageUrl = (imageUrl) => {
-    return imageUrl;
+  const generateThumbnailUrl = (id: string) => {
+    //console.log(`https://drive.google.com/thumbnail?sz=w300&id=${id}`);
+    const width = 300;
+    return `https://drive.google.com/thumbnail?sz=w${width}&id=${id}`;
   };
 
   /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -247,42 +255,52 @@ const HomePage: React.FC = () => {
     text: { fontSize: 12 },
   });
 
-  const SingleAuditionPDF = ({ row, formFields }) => (
-    <Document>
-      <Page style={styles.page}>
-        {formFields.map((field, index) => {
-          const value = row[index];
-          if (parseInt(index) === urlColumn) {
-            // Render image URL as text for the column containing image URLs
-            return (
-              <View key={index} style={styles.section}>
-                <Text>{`${field}: ${generateImageUrl(value)}`}</Text>
-              </View>
-            );
-          } else {
-            // Render text data for other columns
-            return (
-              <View key={index} style={styles.section}>
-                <Text>{`${field}: ${value}`}</Text>
-              </View>
-            );
-          }
-        })}
-      </Page>
-    </Document>
-  );
+  interface SingleAuditionPDFProps {
+    row: string[];
+  }
 
-  const AllAuditionsPDF = ({ data, formFields }) => (
+  interface AllAuditionPDFProps {
+    data: string[][];
+  }
+
+  const SingleAuditionPDF: React.FC<SingleAuditionPDFProps> = ({ row }) => {
+    return (
+      <Document>
+        <Page style={styles.page}>
+          {formFields.map((field, index) => {
+            const value = row[index];
+            if (index.toString() === urlColumn.toString()) {
+              // Render image URL as text for the column containing image URLs
+              return (
+                <View key={index} style={styles.section}>
+                  <Text>{`${field}: ${generateThumbnailUrl(value)}`}</Text>
+                </View>
+              );
+            } else {
+              // Render text data for other columns
+              return (
+                <View key={index} style={styles.section}>
+                  <Text>{`${field}: ${value}`}</Text>
+                </View>
+              );
+            }
+          })}
+        </Page>
+      </Document>
+    );
+  };
+
+  const AllAuditionsPDF: React.FC<AllAuditionPDFProps> = ({ data }) => (
     <Document>
       {data.map((row, rowIndex) => (
         <Page key={rowIndex} style={styles.page}>
           {formFields.map((field, index) => {
             const value = row[index];
-            if (parseInt(index) === urlColumn) {
+            if (index.toString() === urlColumn.toString()) {
               // Render image URL as text for the column containing image URLs
               return (
                 <View key={index} style={styles.section}>
-                  <Text>{`${field}: ${generateImageUrl(value)}`}</Text>
+                  <Text>{`${field}: ${generateThumbnailUrl(value)}`}</Text>
                 </View>
               );
             } else {
@@ -300,11 +318,23 @@ const HomePage: React.FC = () => {
   );
 
   return (
+    // <Document>
+    //   {data.slice(1).map((row, rowIndex) => (
+    //     <Page key={rowIndex} style={styles.page}>
+    //       {row.map((value, index) => (
+    //         <View key={index} style={styles.section}>
+    //           <Text>{`${data[0][index]}: ${value}`}</Text>
+    //         </View>
+    //       ))}
+    //     </Page>
+    //   ))}
+    // </Document>
+
     <>
       <IonMenu contentId="main-content" ref={menuRef}>
         <IonHeader>
           <IonToolbar>
-            <IonTitle id="yourAccount">Your Account</IonTitle>
+            <IonTitle>Your Account</IonTitle>
           </IonToolbar>
         </IonHeader>
         <IonContent className="ion-padding">
@@ -313,10 +343,8 @@ const HomePage: React.FC = () => {
               src={userPhotoUrl || "../../public/test_logo.jpg"}
               alt="User Profile"
             />
-            <h1 id="userName">{userName}</h1>
-            <IonButton id="logoutButton" onClick={logout}>
-              Logout
-            </IonButton>
+            <h1>{userName}</h1>
+            <IonButton onClick={logout}>Logout</IonButton>
           </div>
         </IonContent>
       </IonMenu>
@@ -345,42 +373,43 @@ const HomePage: React.FC = () => {
               ref={ionInputEl}
               onIonInput={handleInput}
             ></IonInput>
-            <IonButton id="auditionsButton" onClick={handleClick}>
-              View Auditions
-            </IonButton>
+            <IonButton onClick={handleClick}>View Auditions</IonButton>
           </div>
 
           <div id="form_data_summary">
             <h2>Auditions:</h2>
             <p> Select a name to view a single audition</p>
-            <IonButton id="expandButton" onClick={expandAll}>
-              Expand All
-            </IonButton>
-            <IonButton id="collapseButton" onClick={collapseAll}>
-              Collapse All
-            </IonButton>
+            <IonButton onClick={expandAll}>Expand All</IonButton>
+            <IonButton onClick={collapseAll}>Collapse All</IonButton>
             {data && (
               <ul>
                 {data.map(
                   (row, rowIndex) =>
                     rowIndex > 0 && (
                       <li key={rowIndex}>
-                        {/* Details section to display data with column headers */}
                         <details>
                           <summary>{row[nameCol]}</summary>
-                          {formFields.map((field, index) => (
-                            <div key={index}>
-                              <p>{`${field}: ${row[index]}`}</p>
-                            </div>
-                          ))}
-                          {/* Export to PDF link */}
+                          {Object.entries(row).map(
+                            ([columnIndex, columnData], index) =>
+                              !nullCols.includes(parseInt(columnIndex)) && (
+                                <div key={index}>
+                                  {parseInt(columnIndex) === urlColumn ? (
+                                    <img
+                                      src={generateThumbnailUrl(
+                                        extractIdFromUrl(columnData)
+                                      )}
+                                      alt="Thumbnail"
+                                    />
+                                  ) : (
+                                    <p>{`${
+                                      formFields[parseInt(columnIndex)]
+                                    }: ${columnData}`}</p>
+                                  )}
+                                </div>
+                              )
+                          )}
                           <PDFDownloadLink
-                            document={
-                              <SingleAuditionPDF
-                                row={row}
-                                formFields={formFields}
-                              />
-                            }
+                            document={<SingleAuditionPDF row={row} />}
                             fileName={`${row[nameCol]}-audition.pdf`}
                           >
                             {({ loading }) =>
@@ -408,12 +437,7 @@ const HomePage: React.FC = () => {
               <div>
                 {data && (
                   <PDFDownloadLink
-                    document={
-                      <AllAuditionsPDF
-                        data={data.slice(1)}
-                        formFields={formFields}
-                      />
-                    }
+                    document={<AllAuditionsPDF data={data.slice(1)} />}
                     fileName="all-auditions.pdf"
                   >
                     {({ loading }) =>
@@ -421,6 +445,13 @@ const HomePage: React.FC = () => {
                     }
                   </PDFDownloadLink>
                 )}
+
+                {/* <PDFDownloadLink
+            document={<AllAuditionsPDF data={data} />}
+            fileName="all-auditions.pdf"
+            >
+            {({ loading }) => (loading ? 'Loading document...' : 'Export All Auditions')}
+            </PDFDownloadLink> */}
               </div>
             </div>
           </IonToolbar>
@@ -429,5 +460,4 @@ const HomePage: React.FC = () => {
     </>
   );
 };
-
 export default HomePage;
