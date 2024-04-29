@@ -18,7 +18,7 @@ const provider = new GoogleAuthProvider();  //creates a new instance of the Goog
 /*The provider.addScope('https://www.googleapis.com/auth/spreadsheets.readonly'); line adds the necessary scope for Google Sheets access. 
 This tells Google's OAuth service that your application requests permission to access the user's Sheets data. 
 When the user signs in, they will be prompted to grant this access. */
-provider.addScope('https://www.googleapis.com/auth/spreadsheets.readonly');
+//provider.addScope('https://www.googleapis.com/auth/spreadsheets.readonly');
 
 
 const auth = getAuth(app);  //initializes the FbA service for your application using the Fb app instance

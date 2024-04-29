@@ -27,6 +27,7 @@ declare global {
 }
 
 const googleSheetsApiKey = import.meta.env.VITE_GOOGLE_SHEETS_API_KEY;
+//this ^ key is a generic API key for our entire project, not just Google Sheets. See Google Cloud Console
 
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                        'Home' page Typescript                                %%
@@ -73,10 +74,10 @@ const HomePage: React.FC = () => {
   /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   %%                                     Get Data from URL()                                      %%
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-   A reminder of what our input element looks like:
-   <IonInput label='sheet_url' value={givenUrl} ref={ionInputEl} onIonInput={handleInput}></IonInput>
-   the value attribute controls what is displayed in the input field - we will clear this after the submit URL button has been clicked to clear the field
-   the ref attribute allows us to connect our element to a reference we can use to manipulate the field and gather information from it
+  A reminder of what our input element looks like:
+  <IonInput label='sheet_url' value={givenUrl} ref={ionInputEl} onIonInput={handleInput}></IonInput>
+  the value attribute controls what is displayed in the input field - we will clear this after the submit URL button has been clicked to clear the field
+  the ref attribute allows us to connect our element to a reference we can use to manipulate the field and gather information from it
   */
   //Controls our input element (this is what we assign 'ref' in the input element)
   const ionInputEl = useRef<HTMLIonInputElement>(null);
@@ -111,14 +112,13 @@ const HomePage: React.FC = () => {
   //Holds the form field information and the fetched data
   const [data, setData] = useState<string[][] | null>(null);
   const [formFields, setFormFields] = useState<string[]>([]);
-  
+ 
 
   useEffect(() => {
     const fetchData = async () => {
       if (sheetID) {
-        //url for fetching data = urlStart + sheetId + urlEnd = https://sheets.googleapis.com/v4/spreadsheets/[GIVENID]/values/Form Responses 1!A1:L27?key=API_KEY
         const urlStart = "https://sheets.googleapis.com/v4/spreadsheets/";
-        const urlEnd = `/values/Form Responses 1!A1:AA100?key=${googleSheetsApiKey}`; //insert API key here
+        const urlEnd = `/values/Form Responses 1!A1:AA100?key=${googleSheetsApiKey}`;
         const urlComplete = urlStart + sheetID + urlEnd;
 
         try {
@@ -127,15 +127,16 @@ const HomePage: React.FC = () => {
             throw new Error("Failed to fetch data");
           }
           const jsonData = await response.json();
+
+          if (jsonData && jsonData.values && jsonData.values.length > 0) {
+            setFormFields(jsonData.values[0]); // Set formFields with column headers
+          }
+
           setData(jsonData.values);
-          setFormFields(jsonData.values[0]);
 
           const bundleViewer = document.getElementById("form_data");
           if (bundleViewer) {
-            console.log("display");
             bundleViewer.style.display = "block";
-          } else {
-            console.log("hide");
           }
         } catch (err) {
           console.error("Error fetching data: ", err);
@@ -187,7 +188,6 @@ const HomePage: React.FC = () => {
             if (String(columnData).startsWith("http")) {
               setUrlColumn(columnIndex);
             }
-
           });
         });
       } else {
@@ -216,7 +216,6 @@ const HomePage: React.FC = () => {
     //console.log(`https://drive.google.com/thumbnail?sz=w300&id=${id}`);
     const width = 300;
     return `https://drive.google.com/thumbnail?sz=w${width}&id=${id}`;
-  };
 
   /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   %%                                    Expand/Collapse Elements()                                %%
@@ -238,16 +237,15 @@ const HomePage: React.FC = () => {
     });
   };
 
-
-/*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                        'home' page HTML                                      %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
-const styles = StyleSheet.create({
-  page: { flexDirection: 'column', padding: 10 },
-  section: { margin: 5, padding: 5 },
-  text: { margin: 12, fontSize: 14 },
-});
+  const styles = StyleSheet.create({
+    page: { flexDirection: "column", padding: 10 },
+    section: { margin: 5, padding: 5 },
+    text: { fontSize: 12 },
+  });
 
 interface SingleAuditionPDFProps {
   row: string[];
@@ -259,27 +257,55 @@ interface AllAuditionPDFProps {
 
 const SingleAuditionPDF: React.FC<SingleAuditionPDFProps> = ({ row }) => {
   return (
+
     <Document>
       <Page style={styles.page}>
-        {row.map((dataPoint, index) => (
-          <View key={index} style={styles.section}>
-            <Text style={styles.text}>{dataPoint}</Text>
-          </View>
-        ))}
+        {formFields.map((field, index) => {
+          const value = row[index];
+          if (parseInt(index) === urlColumn) {
+            // Render image URL as text for the column containing image URLs
+            return (
+              <View key={index} style={styles.section}>
+                <Text>{`${field}: ${generateImageUrl(value)}`}</Text>
+              </View>
+            );
+          } else {
+            // Render text data for other columns
+            return (
+              <View key={index} style={styles.section}>
+                <Text>{`${field}: ${value}`}</Text>
+              </View>
+            );
+          }
+        })}
       </Page>
     </Document>
   );
 };
   
   const AllAuditionsPDF: React.FC<AllAuditionPDFProps> = ({ data }) => (
+
     <Document>
       {data.map((row, rowIndex) => (
         <Page key={rowIndex} style={styles.page}>
-          {row.map((value, index) => (
-            <View key={index} style={styles.section}>
-              <Text style={styles.text}>{value}</Text>
-            </View>
-          ))}
+          {formFields.map((field, index) => {
+            const value = row[index];
+            if (parseInt(index) === urlColumn) {
+              // Render image URL as text for the column containing image URLs
+              return (
+                <View key={index} style={styles.section}>
+                  <Text>{`${field}: ${generateImageUrl(value)}`}</Text>
+                </View>
+              );
+            } else {
+              // Render text data for other columns
+              return (
+                <View key={index} style={styles.section}>
+                  <Text>{`${field}: ${value}`}</Text>
+                </View>
+              );
+            }
+          })}
         </Page>
       ))}
     </Document>
