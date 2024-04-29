@@ -1,11 +1,21 @@
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonImg, IonButton, IonList, IonItem } from '@ionic/react';
-import './Tab2.css';
+import {
+  IonContent,
+  IonHeader,
+  IonPage,
+  IonTitle,
+  IonToolbar,
+  IonImg,
+  IonButton,
+  IonList,
+  IonItem,
+} from "@ionic/react";
+import React from "react";
+import "./Tab2.css";
 
 const Tab2: React.FC = () => {
-
   const [userData, setUserData] = React.useState(null);
   React.useEffect(() => {
-    getUserData().then(data => setUserData(data));
+    getUserData().then((data) => setUserData(data));
   }, []);
 
   if (!userData) {
@@ -28,11 +38,13 @@ const Tab2: React.FC = () => {
         </IonHeader>
         <IonButton expand="full">Add Form</IonButton>
         <IonList>
-          {userData.forms.map(form => (
+          {userData.forms.map((form) => (
             <IonItem key={form.id}>
               {form.name}
               <IonButton fill="outline">Edit</IonButton>
-              <IonButton fill="outline" color="danger">Delete</IonButton>
+              <IonButton fill="outline" color="danger">
+                Delete
+              </IonButton>
               <IonButton fill="outline">Generate QR Code</IonButton>
             </IonItem>
           ))}
